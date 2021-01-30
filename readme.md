@@ -1,6 +1,6 @@
 # Music
 
-![Screenshot](assets/screenshot.png)
+![Screenshot](/assets/screenshot.png)
 
 An example of creating sounds and music with [LÖVE](https://love2d.org/).
 
