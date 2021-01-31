@@ -10,8 +10,9 @@ The oscillator code is based on the [Denver Synthesizer Library](https://love2d.
 
 MML set is not complete yet. The use of waveforms is done using x followed by a number (1 = sin, 2 = saw, 3 = sqr, 4 = tri and 5 = noise).
 
-Next:
+To do:
 * defining ADSR envelope macros
 * a more standard way of using the waveforms
 * saving songs as .wav
-* …
+* LFOs
+* and maybe trying to implement some of the stuff from [PPMCK MML](https://shauninman.com/assets/downloads/ppmck_guide.html)
