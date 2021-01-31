@@ -2,7 +2,7 @@
 
 ![Screenshot](https://raw.githubusercontent.com/marc2o/Music/main/assets/screenshot.png)
 
-An example of creating sounds and music with [LÖVE](https://love2d.org/).
+An example of creating sounds and music with [LÖVE](https://love2d.org/), »framework you can use to make 2D games in Lua.«
 
 Music is created using MML, a simple Music Markup Language. The demo included is based on the »Music« AmigaBASIC demo program from 1985.
 
