@@ -3,7 +3,7 @@ synth = {
     bits = 8,
     channels = 1,
     baseFrequency = 440,
-    amplitude = 0.3,
+    amplitude = 0.75,
   
     sequence = {
       osc = "SIN", -- default sound
