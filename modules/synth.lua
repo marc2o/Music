@@ -155,7 +155,8 @@ synth = {
             })
             
             for s = 1, sound:getSampleCount() - 1 do
-              synth.audioData:setSample(sampleIndex, synth.audioData:getSample(sampleIndex) + sound:getSample(s) / synth.voices.number)
+              local sample = synth.audioData:getSample(sampleIndex) + sound:getSample(s) / synth.voices.number
+              synth.audioData:setSample(sampleIndex, sample)
               sampleIndex = sampleIndex + 1
             end
           end
