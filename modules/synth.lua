@@ -193,11 +193,16 @@ synth = {
   
         if string.match(c, "%u") then -- capital letters indicate channels
           synth.voices.currentVoice = c
-          -- should check wether channel already exists...
-          synth.voices[synth.voices.currentVoice] = {}
-          synth.voices[synth.voices.currentVoice].osc = "SQR"
-          synth.voices[synth.voices.currentVoice].len = 0
-          synth.voices[synth.voices.currentVoice].data = {}
+          local voiceExists = false
+          for k, v in pairs(synth.voices) do
+            if k == c then voiceExists = true end
+          end
+          if not voiceExists then
+            synth.voices[synth.voices.currentVoice] = {}
+            synth.voices[synth.voices.currentVoice].osc = "SQR"
+            synth.voices[synth.voices.currentVoice].len = 0
+            synth.voices[synth.voices.currentVoice].data = {}
+          end
         end
   
         if c == "o" then -- set octave
