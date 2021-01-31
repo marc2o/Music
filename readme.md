@@ -8,7 +8,7 @@ Music is created using MML, a simple [Music Macro Language](https://en.wikipedia
 
 The oscillator code is based on the [Denver Synthesizer Library](https://love2d.org/forums/viewtopic.php?t=79499) and the MML parser is a changed and extended version of the one used in [love-mml](https://github.com/GoonHouse/love-mml).
 
-MML set is not complete yet. The use of waveforms is done using x followed by a number (1 = sin, 2 = saw, 3 = sqr, 4 = tri and 5 = noise).
+The MML instrucions set is not complete yet. The use of waveforms is done using x followed by a number (1 = sin, 2 = saw, 3 = sqr, 4 = tri and 5 = noise).
 
 To do:
 * defining ADSR envelope macros
