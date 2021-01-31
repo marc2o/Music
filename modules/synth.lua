@@ -27,7 +27,7 @@ synth = {
           -- DECAY: time taken for the subsequent run down from the attack level to the designated sustain level
           sustain = 0.60,
           -- SUSTAIN: level during the main sequence of the sound's duration, until the key is released
-          release = 0.20
+          release = 0.50
           -- RELEASE: time taken for the level to decay from the sustain level to zero after the key is released
       }
     },
@@ -168,7 +168,6 @@ synth = {
       local pos = 1
       local octave = 4
       local volume = 1
-      local finished = false
       local waveform = synth.sequence.osc
   
       repeat
@@ -291,13 +290,14 @@ synth = {
       local duration = args.duration
       local frequency = synth.baseFrequency
       local volume = args.volume or synth.sequence.v
+      local mute = 0 -- if set to 1 creates a sample value of 0 (mutes the sound)
 
       if note ~= "r" then
         frequency = synth.noteToFrequency(note)
         synth.oscillators.osc = synth.oscillators[waveform](frequency, ...)
       end
-      if lastnote == "r" then
-        synth.oscillators.osc = nil
+      if note == "r" and lastNote == "r" then
+        mute = 1
       end
 
       local sample = 0
@@ -320,15 +320,11 @@ synth = {
           end
         else
           if i <= releaseSamples then
-            envelope = 0 -- no release envelope yet
+            envelope = sustainVolume * (1 - i / releaseSamples)
           end
         end
   
-        if synth.oscillators.osc ~= nil then
-          sample = synth.oscillators.osc(synth.baseFrequency, synth.sampleRate) * synth.amplitude * volume * envelope
-        else
-          sample = 0
-        end
+        sample = synth.oscillators.osc(synth.baseFrequency, synth.sampleRate) * synth.amplitude * volume * envelope * (1 - mute)
 
         data:setSample(i, sample)
       end
