@@ -21,6 +21,7 @@ end
 prettyTime = ""
 time = 0
 startTime = love.timer.getTime()
+
 function love.update(dt)
   if dt < 1/50 then
     love.timer.sleep(1/50 - dt)

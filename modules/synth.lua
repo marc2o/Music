@@ -185,7 +185,7 @@ synth = {
         
         if not c then
           -- might be a comment starting with # and ends with line break
-          c, args, newpos = string.match(string.sub(mml, pos), "(#)(.-)\n()[%a<>]")
+          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>]")
         end
 
         if not c then
