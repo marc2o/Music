@@ -290,14 +290,13 @@ synth = {
       local duration = args.duration
       local frequency = synth.baseFrequency
       local volume = args.volume or synth.sequence.v
-      local mute = 0 -- if set to 1 creates a sample value of 0 (mutes the sound)
 
       if note ~= "r" then
         frequency = synth.noteToFrequency(note)
         synth.oscillators.osc = synth.oscillators[waveform](frequency, ...)
       end
       if note == "r" and lastNote == "r" then
-        mute = 1
+        synth.oscillators.osc = nil
       end
 
       local sample = 0
@@ -324,7 +323,11 @@ synth = {
           end
         end
   
-        sample = synth.oscillators.osc(synth.baseFrequency, synth.sampleRate) * synth.amplitude * volume * envelope * (1 - mute)
+        if synth.oscillators.osc ~= nil then
+          sample = synth.oscillators.osc(synth.baseFrequency, synth.sampleRate) * synth.amplitude * volume * envelope
+        else
+          sample = 0
+        end
 
         data:setSample(i, sample)
       end
