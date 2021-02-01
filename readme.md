@@ -12,33 +12,33 @@ The MML instrucions set is not complete, yet – and not really standard.
 
 ## Already implemented
 
-**Entering notes: <note><sharp/flat><len>**
+**Entering notes: `<note><sharp/flat><len>`**
 
-**<note>** (a, b, c, d, e, f, g, h or b)
-**<sharp/flat>** (+ or -)
-**<len>** (1 … n) ex. 4 is the length of a 1/4 note
-If no length is given, the length specified with the length command **l<len>** is used.
+**`<note>`** (a, b, c, d, e, f, g, h or b)
+**`<sharp/flat>`** (+ or -)
+**`<len>`** (1 … n) ex. 4 is the length of a 1/4 note
+If no length is given, the length specified with the length command **`l<len>`** is used.
 
-**Rests: r<len>**
-If no length is given, the length specified with the length command **l<len>** is used.
-Waits **w<len>** are treated as rests for now.
+**Rests: `r<len>`**
+If no length is given, the length specified with the length command **`l<len>`** is used.
+Waits **`w<len>`** are treated as rests for now.
 
-**Tempo: t<bpm>**
+**Tempo: `t<bpm>`**
 
-**Default note length: l<len>**
+**Default note length: `l<len>`**
 
-**Octave: o<num>**
+**Octave: `o<num>`**
 Default octave is 4.
 
-**Octave up: >**
+**Octave up: `>`**
 
-**Octave down: <**
+**Octave down: `<`**
 
-**Set volume: v<num>**
-**<num>** (value between 0 and 15)
+**Set volume: `v<num>`**
+**`<num>`** (value between 0 and 15)
 
-**Set waveform: @<num>**
-**<num>** (1 = SIN, 2 = SAW, 3 = SQR, 4 = TRI, 5 = noise)
+**Set waveform: `@<num>`**
+**`<num>`** (1 = SIN, 2 = SAW, 3 = SQR, 4 = TRI, 5 = noise)
 
 
 ## To do…
