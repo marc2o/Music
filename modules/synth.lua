@@ -175,17 +175,17 @@ synth = {
           parser based on love-mml
           https://github.com/GoonHouse/love-mml
         ]]
-        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>])(%A-)%s-()[%a<>]")
+        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)%s-()[%a<>@]")
         
         if not c then
           -- might be the last command in the string.
-          c, args = string.match(string.sub(mml, pos), "^([%a<>])(%A-)")
+          c, args = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)")
           newpos = 0
         end
         
         if not c then
           -- might be a comment starting with # and ends with line break
-          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>]")
+          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@]")
         end
 
         if not c then
@@ -218,7 +218,7 @@ synth = {
         elseif c == "v" then -- set volume 0 to 15
           synth.sequence.v = tonumber(args) / 15
     
-        elseif c == "x" then -- set waveform 1 to 5 for current voice
+        elseif c == "@" then -- set waveform 1 to 5 for current voice
           local waveforms = { "SIN", "SAW", "SQR", "TRI", "NSE" }
           waveform = waveforms[tonumber(args)]
   
