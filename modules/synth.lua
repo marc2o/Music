@@ -95,12 +95,11 @@ synth = {
       end    
     },
   
-    loadMML = function (path)
+    load = function (path)
       synth.mml = love.filesystem.read("string", path)
     end,
     
-    playSequence = function (file)
-      synth.loadMML(file)
+    play = function ()
       synth.parseMML(synth.mml)
       synth.renderAudio()
   

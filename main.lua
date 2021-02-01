@@ -20,7 +20,7 @@ end
 
 prettyTime = ""
 time = 0
-startTime = love.timer.getTime()
+startTime = 0
 
 function love.update(dt)
   if dt < 1/50 then
@@ -136,7 +136,9 @@ function love.quit()
 end
 
 function love.load()
-  synth.playSequence("assets/music.mml")
+  synth.load("assets/music.mml")
+  synth.play()
+  startTime = love.timer.getTime()
 end
 
 function love.run()
