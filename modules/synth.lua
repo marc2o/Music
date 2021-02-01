@@ -3,7 +3,7 @@ synth = {
     bits = 8,
     channels = 1,
     baseFrequency = 440,
-    amplitude = 0.75,
+    amplitude = 1,
   
     sequence = {
       osc = "SIN", -- default sound
@@ -155,7 +155,7 @@ synth = {
             })
             
             for s = 1, sound:getSampleCount() - 1 do
-              local sample = synth.audioData:getSample(sampleIndex) + sound:getSample(s) / synth.voices.number
+              local sample = math.tanh(synth.audioData:getSample(sampleIndex) + sound:getSample(s) / synth.voices.number)
               synth.audioData:setSample(sampleIndex, sample)
               sampleIndex = sampleIndex + 1
             end
