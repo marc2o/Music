@@ -309,11 +309,12 @@ synth = {
       local data = love.sound.newSoundData(duration * synth.sampleRate, synth.sampleRate, synth.bits, synth.channels)
       local envelope = 0
 
+      local attackSamples = synth.envelopes.env1.attack * synth.sampleRate
+      local decaySamples = attackSamples + synth.envelopes.env1.decay * synth.sampleRate
+      local sustainVolume = synth.envelopes.env1.sustain
+      local releaseSamples = synth.envelopes.env1.release * synth.sampleRate
+
       for i = 0, duration * synth.sampleRate - 1 do
-        local attackSamples = synth.envelopes.env1.attack * synth.sampleRate
-        local decaySamples = attackSamples + synth.envelopes.env1.decay * synth.sampleRate
-        local sustainVolume = synth.envelopes.env1.sustain
-        local releaseSamples = synth.envelopes.env1.release * synth.sampleRate
   
         if note ~= "r" then
           if i <= attackSamples then
