@@ -51,7 +51,7 @@ Default octave is 4.
 
 ## To do…
 
-* defining ADSR envelope macros
+* defining ADSR envelope macros using `@EN<num> = { t t v t }` syntax
 * saving songs as .wav
-* LFOs
+* a way of defining LFO macros
 * and maybe trying to implement some of the stuff from [PPMCK MML](https://shauninman.com/assets/downloads/ppmck_guide.html)
