@@ -183,22 +183,17 @@ synth = {
           but extended evaluating more commands and made compatible with various MML dialects 
         ]]
         local tie = ""
-        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)%s-()[%a<>@]")
+        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)%s-()[%a<>@&]")
         
         if not c then
           -- might be the last command in the string.
-          c, args = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)")
+          c, args = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)")
           newpos = 0
         end
 
         if not c then
-          -- might by the note tier "&"
-          c, tie, args, newpos = string.match(string.sub(mml, pos), "^([&])([%a])(%A-)%s-()[%a<>@]")
-        end
-        
-        if not c then
           -- might be a comment starting with # and ends with line break
-          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@]")
+          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@&]")
         end
 
         if not c then
@@ -236,7 +231,14 @@ synth = {
           waveform = waveforms[tonumber(args)]
 
         elseif c == "&" then -- tie notes
-          --synth.voices[synth.voices.currentVoice].data[1].duration = duration
+          table.insert(synth.voices[synth.voices.currentVoice].data, {
+            {
+              waveform = "",
+              note = "&",
+              duration = 0,
+              volume = 0
+            }
+          })
   
         elseif c == "r" or c == "p" or c == "w" then -- rest, pause (wait is treated as rest for now)
           local duration
@@ -312,6 +314,10 @@ synth = {
       local frequency = synth.baseFrequency
       local volume = args.volume or synth.sequence.v
 
+      if note == "&" then
+        return nil
+      end
+
       if note ~= "r" then
         frequency = synth.noteToFrequency(note)
         synth.oscillators.osc = synth.oscillators[waveform](frequency, ...)
@@ -343,6 +349,10 @@ synth = {
           if i <= releaseSamples then
             envelope = sustainVolume * (1 - i / releaseSamples)
           end
+        end
+
+        if lastNote == "&" then
+          envelope = sustainVolume
         end
   
         if synth.oscillators.osc ~= nil then

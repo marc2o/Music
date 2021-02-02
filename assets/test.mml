@@ -1,10 +1,8 @@
 #TITLE test tune
 #COMPOSER none
 
-t14
-A o4 @1 v15 
-A l8 r g a h r > d c c 
-A l2
-A cdef
-A grcr
-A crrr
+t16
+
+A @3o4v15l8
+A e4&e4r4
+A crdrerfr gr

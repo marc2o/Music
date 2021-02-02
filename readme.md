@@ -14,7 +14,7 @@ The MML instrucions set is not complete, yet – and not really standard.
 
 **Entering notes: `<note><sharp/flat><len>`**
 
-**`<note>`** (a, b, c, d, e, f, g, h or b)
+**`<note>`** (c, d, e, f, g, a, h or b)
 
 **`<sharp/flat>`** (+ or -)
 
@@ -49,6 +49,10 @@ Default octave is 4.
 **Set waveform: `@<num>`**
 
 **`<num>`** (1 = SIN, 2 = SAW, 3 = SQR, 4 = TRI, 5 = noise)
+
+**Note tie: `&`**
+
+Ties two of the same of different notes together, e. g. two quarter notes tied two one half note`c4&c4` or two different notes tied together `c&d`.
 
 
 ## To do…
