@@ -182,17 +182,23 @@ synth = {
           parser originally based on love-mml (https://github.com/GoonHouse/love-mml)
           but extended evaluating more commands and made compatible with various MML dialects 
         ]]
-        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)%s-()[%a<>@&]")
+        local tie = ""
+        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)%s-()[%a<>@]")
         
         if not c then
           -- might be the last command in the string.
-          c, args = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)")
+          c, args = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)")
           newpos = 0
+        end
+
+        if not c then
+          -- might by the note tier "&"
+          c, tie, args, newpos = string.match(string.sub(mml, pos), "^([&])([%a])(%A-)%s-()[%a<>@]")
         end
         
         if not c then
           -- might be a comment starting with # and ends with line break
-          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@&]")
+          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@]")
         end
 
         if not c then
@@ -230,6 +236,7 @@ synth = {
           waveform = waveforms[tonumber(args)]
 
         elseif c == "&" then -- tie notes
+          --synth.voices[synth.voices.currentVoice].data[1].duration = duration
   
         elseif c == "r" or c == "p" or c == "w" then -- rest, pause (wait is treated as rest for now)
           local duration
