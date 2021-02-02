@@ -136,7 +136,7 @@ function love.quit()
 end
 
 function love.load()
-  synth.load("assets/test.mml")
+  synth.load("assets/music.mml")
   synth.play()
   startTime = love.timer.getTime()
 end
