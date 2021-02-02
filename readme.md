@@ -22,7 +22,9 @@ The MML instrucions set is not complete, yet – and not really standard.
 
 If no length is given, the length specified with the length command **`l<len>`** is used.
 
-**Rests: `r<len>`**
+**Rests or pauses: `r<len>`, `p<len>`**
+
+Either p or r can be used, depending on the MML dialect.
 
 If no length is given, the length specified with the length command **`l<len>`** is used.
 

@@ -1,4 +1,9 @@
 synth = {
+    --[[
+      synthesizer and sequencer module for Lua/LÖVE
+      written by Marc Oliver Orth
+      © 2021
+    ]]
     sampleRate = 11025, --44100 = HQ
     bits = 8,
     channels = 1,
@@ -172,8 +177,8 @@ synth = {
   
       repeat
         --[[
-          parser based on love-mml
-          https://github.com/GoonHouse/love-mml
+          parser originally based on love-mml (https://github.com/GoonHouse/love-mml)
+          but extended evaluating more commands and made compatible with various MML dialects 
         ]]
         local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)%s-()[%a<>@]")
         
@@ -222,7 +227,7 @@ synth = {
           local waveforms = { "SIN", "SAW", "SQR", "TRI", "NSE" }
           waveform = waveforms[tonumber(args)]
   
-        elseif c == "r" or c == "w" then -- rest (wait is treated as rest for now)
+        elseif c == "r" or c == "p" or c == "w" then -- rest, pause (wait is treated as rest for now)
           local duration
           if args ~= "" then
             duration = (1 / tonumber(args)) * (60 / synth.sequence.t)
