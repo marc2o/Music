@@ -11,7 +11,7 @@ synth = {
     amplitude = 1,
   
     sequence = {
-      osc = "SIN", -- default sound
+      osc = "TRI", -- default sound
       v = 1,
       t = 120,
       o = 4,
@@ -158,10 +158,12 @@ synth = {
               lastNote = lastNote
             })
             
-            for s = 1, sound:getSampleCount() - 1 do
-              local sample = math.tanh(synth.audioData:getSample(sampleIndex) + sound:getSample(s) / synth.voices.number)
-              synth.audioData:setSample(sampleIndex, sample)
-              sampleIndex = sampleIndex + 1
+            if sound ~= nil then
+              for s = 1, sound:getSampleCount() - 1 do
+                local sample = math.tanh(synth.audioData:getSample(sampleIndex) + sound:getSample(s) / synth.voices.number)
+                synth.audioData:setSample(sampleIndex, sample)
+                sampleIndex = sampleIndex + 1
+              end
             end
           end
 
@@ -180,17 +182,17 @@ synth = {
           parser originally based on love-mml (https://github.com/GoonHouse/love-mml)
           but extended evaluating more commands and made compatible with various MML dialects 
         ]]
-        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)%s-()[%a<>@]")
+        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)%s-()[%a<>@&]")
         
         if not c then
           -- might be the last command in the string.
-          c, args = string.match(string.sub(mml, pos), "^([%a<>@])(%A-)")
+          c, args = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)")
           newpos = 0
         end
         
         if not c then
           -- might be a comment starting with # and ends with line break
-          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@]")
+          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@&]")
         end
 
         if not c then
@@ -226,6 +228,8 @@ synth = {
         elseif c == "@" then -- set waveform 1 to 5 for current voice
           local waveforms = { "SIN", "SAW", "SQR", "TRI", "NSE" }
           waveform = waveforms[tonumber(args)]
+
+        elseif c == "&" then -- tie notes
   
         elseif c == "r" or c == "p" or c == "w" then -- rest, pause (wait is treated as rest for now)
           local duration
@@ -254,7 +258,7 @@ synth = {
         elseif c == "<" then -- decrease octave
           octave = octave - 1
   
-        elseif c:find("[a-g]") then -- play note
+        elseif c:find("[a-h]") then -- play note using c, d, e, f, g, a, h or b
           local note
           local mod = string.match(args, "[+#-]")
           if mod then
