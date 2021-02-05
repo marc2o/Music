@@ -193,10 +193,6 @@ synth = {
       end
 
       repeat
-        --[[
-          parser originally based on love-mml (https://github.com/GoonHouse/love-mml)
-          but extended evaluating more commands and made compatible with various MML dialects 
-        ]]
         local tie = ""
         local cmd, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)%s-()[%a<>@&]")
         
