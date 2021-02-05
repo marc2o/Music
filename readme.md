@@ -54,10 +54,24 @@ Default octave is 4.
 
 Ties two of the same of different notes together, e. g. two quarter notes tied two one half note`c4&c4` or two different notes tied together `c&d`.
 
+**Envelope: `@@EN<num> = { <attack> <decay> <sustain> <release> }`**
+
+_At the moment only defines the default envelope env1._
+
+**`<num>`** (1 to 100)
+
+**`<attack>`** (0 to 100) The time taken for initial run-up of level from nil to peak, beginning when the key is pressed.
+
+**`<decay>`** (0 to 100) The time taken for the subsequent run down from the attack level to the designated sustain level.
+
+**`<sustain>`** (0 to 100) The level during the main sequence of the sound's duration, until the key is released.
+
+**`<release>`** (0 to 100) The time taken for the level to decay from the sustain level to zero after the key is released.
+
 
 ## To do…
 
-* defining ADSR envelope macros using `@EN<num> = { t t v t }` syntax
+* defining more ADSR envelopes macros using `@@EN<num> = { t t v t }` syntax
 * saving songs as .wav
 * a way of defining LFO macros
 * and maybe trying to implement some of the stuff from [PPMCK MML](https://shauninman.com/assets/downloads/ppmck_guide.html)

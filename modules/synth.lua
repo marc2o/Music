@@ -173,12 +173,27 @@ synth = {
   
     parseMML = function (mml)
       local pos = 1
+      local newpos = 0
       local octave = 4
       local volume = 1
       local waveform = synth.sequence.osc
       local envelopeNumber = 0
       local attack, decay, sustain, release
   
+      for cmd, args, next in string.gmatch(mml, "(@@EN)(.-)\n()") do
+        local num = string.match(args, "(%d+)")
+        local env = string.match(args, "{(.-)}")
+        local val = {}
+        for token in string.gmatch(env, "[^%s]+") do
+          table.insert(val, token / 100)
+        end
+        synth.envelopes.env1.attack = val[1]
+        synth.envelopes.env1.decay = val[2]
+        synth.envelopes.env1.sustain = val[3]
+        synth.envelopes.env1.release = val[4]
+        pos = next + 1
+      end
+
       repeat
         --[[
           parser originally based on love-mml (https://github.com/GoonHouse/love-mml)
@@ -199,17 +214,12 @@ synth = {
         end
 
         if not cmd then
-          -- might by an envelope definition
-          cmd, args, newpos = string.match(mml, "(@EN)(.-)\n()[%a<>&@]")
-        end
-
-        if not cmd then
           -- probably bad syntax.
           error("Malformed MML")
         end
-  
+
         pos = pos + (newpos - 1)
-  
+
         if string.match(cmd, "%u") then -- capital letters indicate channels
           synth.voices.currentVoice = cmd
           local voiceExists = false
@@ -223,7 +233,7 @@ synth = {
             synth.voices[synth.voices.currentVoice].data = {}
           end
         end
-  
+
         if cmd == "o" then -- set octave
           octave = tonumber(args)
     
@@ -237,15 +247,6 @@ synth = {
           local waveforms = { "SIN", "SAW", "SQR", "TRI", "NSE" }
           waveform = waveforms[tonumber(args)]
 
-        elseif cmd == "@EN" then -- define envelope
-          envelopeNumber = string.match(args, "(%d+)")
-          local env = string.match(args, "{(.-)}")
-          local val = {}
-          for token in string.gmatch(env, "[^%s]+") do
-              table.insert(val, token)
-          end
-      
-        
         elseif cmd == "&" then -- tie notes
           table.insert(synth.voices[synth.voices.currentVoice].data, {
             {
