@@ -1,20 +1,20 @@
 #TITLE AmigaBASIC Music Demo, 20. Juli 85
 #COMPOSER Johann Sebastian Bach
 
-@@EN1 = { 2 80 60 50 }
+@v1 = { 2 80 60 50 }
 
 A 
-t24 @3 o4 l6
+t24 @3 o4 l6 @v1
 r6gab>dcceddgf+gd<bgab>cdedc<babgf+gadf+a>c<babgab>dcceddgf+gd<bgabe>dc<bagdgf+gb>dgd<bgb>dl2<b1>cd1dc1<bl6adef+aga>c<b>c<af+df+a>c<babgab>dcceddgf+gd<bgabe>dc<bagdgf+gbab>dcceddgf+gd<bgab>cdedc<babgf+gadf+a>c<babgab>dcceddgf+gd<bgabe>dc<bagdgf+l2g1ga1bbagl6ddef+aga>c<b>c<af+df+a>c<babgab>dcceddgf+gd<bgabe>dc<bagdgf+gbab>dcceddgf+gd<bgab>cdedc<babgf+gadf+a>c<babgab>dcceddgf+gd<bgabe>dc<bagdgf+gb>dgd<bdb>c+d<def+ag+g+baa>c<b>c<aecdef>dcd<bg+ef+g+a>c<b>ceddfeeag+aec<ab>cfedc<baeag+a>cear3l2dl6ecdegfgb-aa>c<b>c<afdefegfgec<gab-a>c<b>c<afdefecdegf+gbabgab>dcceddgf+gd<bgab>cdedc<babgf+def+aga>c<b>c<af+df+a>c<babgab>dcceddgf+gd<bgabe>dc<bagdgf+gb>dgd<bgb>afd<bgb>ded<af+a>cd<bgegb>c<af+df+a>c<babgab>dcceddgf+gd<bgab>cdedc<babgf+gadf+a>c<babgab>dcceddgf+gd<bgabe>dc<bagdgf+g1g2r1
 
 B
-@1 o3 l2
+@1 o3 l2 @v1
 r2l6g3f+g3ab3ab3ge3de3f+g3de3<ba3>da3ga3f+d3f+g3f+g3ab3ab3ge3ga3f+g3e<a3>c<b3>gb3>dg3dl2<g1ga1bbagal6d3ef+3ga3>c<a3f+d3f+g3dg3f+g3ab3ag3f+e3ga3gf+3ga3c<b3>dg3f+g3ab3ab3ge3de3f+g3de3<ba3>f+a3ga3f+d3f+g3f+g3ab3ab3ge3ga3f+g3e<a3>cl2b1>cd1dc1<bal6d3ef+3ga3>c<a3f+d3f+l2b1>cd1<ba4b8>c8<bal6g3dg3f+g3ab3ab3ge3de3f+g3de3<ba3>da3ga3f+d3f+g3f+g3ab3ab3ge3ga3f+g3e<a3>c<b3>gb3>dg3<gl2a1b>c1c<bb4>c8d8<bal6a3g+a3b>c3<b>c3<af3aa3g+a3f+<b3>d>l2c1de1edd4e8f8dl6c3<g>c3<ge3dc3ef3ab3>dc3<g>c3<a>d3<f+l2b1>cd1dc<b1l6a3c+d3ef+3ga3>c<a3f+d3f+l2b1>cd1<ba4b8>c8<bagl6<b3>dg3d<b3g>d3b>c2c3<ab2b3ga2a3f+d3f+g3dg3f+g3ab3ab3ge3de3f+g3de3<ba3>da3ga3f+d3f+g3f+g3ab3ab3ge3ga3f+g3e<a3>c<b1b2r1
 
 C
-@2 o3 l2
+@2 o3 l2 @v1
 g>ge<b>e<eab>cdf+dgec<b>edcc+d<gr3>g6d3<b6g>f+ef+edef+gdr3d6d3d6<d>r3d6d3d6gf+eb<b>ecd<dg>ge<b>e<eab>cdf+dgec<b>edcc+d<g>f+ef+edef+gdr3d6d3d6<dr3>d6d3d6gf+eb<b>ecd<dg>ge<b>e<eab>cdf+dgec<b>edcc+d<gr3>g6f+3e6dc<ba>a4g4f4e4d<b>ea>fdcfedd+e<a>ab>c<aefdgcecfdgcr3c6<b3>d6<g>ge<b>e<eab>cdr3d6d3d6<dr3>d6d3d6gf+eb<b>ecd<dg1g2g1g2g1g2g1g2g>ge<b>e<eab>cdf+dgec<b>edcc+d<g1g2r1
 
 D
-@4 o2 l2
+@4 o2 l2 @v1
 r2dege<ba>dcc<a>f+g<g>ege<b>ceddr2b3g6d<ggagf+gagf+a3a6>d3d6f+3a6f+3d6<a3>d6ddegd<bl4>c<a>d<b>c<al2b>dege<ba>dcc<a>f+g<g>ege<b>cedd<ggagf+gagf+l6a3a>d3df+3af+3d<a3>dl2ddegd<bl4>c<a>d<b>c<al2b>dege<ba>dcc<a>f+g<g>ege<b>ceddr3g6d3e6f+dde<a>aaag+e<a>f+afcdf+ec<ag>cagdf+ggegfaggr3d6d3d6ddege<ba>dccl6<a3a>d3df+3af+3d<a3>dl2ddegd<bl4>c<a>d<b>c<al2gr3>g6d3g6dr3g6e3c6<ar3>d6<b3>e6<e3a6f+3>a6f+3d6ddege<ba>d<cc<a>f+g<g>ege<dd1d2r2r1

@@ -25,15 +25,11 @@ synth = {
     audioData = 0,
   
     envelopes = {
-        env1 = {
-          attack = 0.02,
-          -- ATTACK: time taken for initial run-up of level from nil to peak, beginning when the key is pressed
-          decay = 0.80,
-          -- DECAY: time taken for the subsequent run down from the attack level to the designated sustain level
-          sustain = 0.60,
-          -- SUSTAIN: level during the main sequence of the sound's duration, until the key is released
-          release = 0.50
-          -- RELEASE: time taken for the level to decay from the sustain level to zero after the key is released
+      default = {
+        attack = 0,
+        decay = 0,
+        sustain = 1,
+        release = 0
       }
     },
 
@@ -155,6 +151,7 @@ synth = {
               note = synth.voices[k].data[i][1].note,
               duration = synth.voices[k].data[i][1].duration,
               volume = synth.voices[k].data[i][1].volume,
+              envelope = synth.voices[k].data[i][1].envelope,
               lastNote = lastNote
             })
             
@@ -175,22 +172,23 @@ synth = {
       local pos = 1
       local newpos = 0
       local octave = 4
-      local volume = 1
+      local volume = nil
       local waveform = synth.sequence.osc
-      local envelopeNumber = 0
-      local attack, decay, sustain, release
+      local envelope = nil
   
-      for cmd, args, next in string.gmatch(mml, "(@@EN)(.-)\n()") do
-        local num = string.match(args, "(%d+)")
+      for cmd, args, next in string.gmatch(mml, "(@v%d+).-=(.-)\n()") do
+        local num = string.match(cmd, "(%d+)")
+        local cmd = string.match(cmd, "(@v)")
         local env = string.match(args, "{(.-)}")
         local val = {}
         for token in string.gmatch(env, "[^%s]+") do
           table.insert(val, token / 100)
         end
-        synth.envelopes.env1.attack = val[1]
-        synth.envelopes.env1.decay = val[2]
-        synth.envelopes.env1.sustain = val[3]
-        synth.envelopes.env1.release = val[4]
+        synth.envelopes[num] = {}
+        synth.envelopes[num].attack = val[1]
+        synth.envelopes[num].decay = val[2]
+        synth.envelopes[num].sustain = val[3]
+        synth.envelopes[num].release = val[4]
         pos = next + 1
       end
 
@@ -218,8 +216,6 @@ synth = {
           error("Malformed MML")
         end
 
-        pos = pos + (newpos - 1)
-
         if string.match(cmd, "%u") then -- capital letters indicate channels
           synth.voices.currentVoice = cmd
           local voiceExists = false
@@ -227,6 +223,7 @@ synth = {
             if k == cmd then voiceExists = true end
           end
           if not voiceExists then
+            volume = nil
             synth.voices[synth.voices.currentVoice] = {}
             synth.voices[synth.voices.currentVoice].osc = "SQR"
             synth.voices[synth.voices.currentVoice].len = 0
@@ -240,12 +237,19 @@ synth = {
         elseif cmd == "t" then -- set tempo in bpm
           synth.sequence.t = tonumber(args)
     
-        elseif cmd == "v" then -- set volume 0 to 15
-          synth.sequence.v = tonumber(args) / 15
+        elseif cmd == "v" then -- set volume 0 to 100
+          if string.sub(mml, pos - 1, pos - 1) ~= "@" then
+            volume  = tonumber(args) / 100
+          end
     
         elseif cmd == "@" then -- set waveform 1 to 5 for current voice
-          local waveforms = { "SIN", "SAW", "SQR", "TRI", "NSE" }
-          waveform = waveforms[tonumber(args)]
+          local test = string.match(string.sub(mml, pos), "^(@v%d+)")
+          if test then
+            envelope = string.match(test, "(%d+)")
+          else
+            local waveforms = { "SIN", "SAW", "SQR", "TRI", "NSE" }
+            waveform = waveforms[tonumber(args)]
+          end
 
         elseif cmd == "&" then -- tie notes
           table.insert(synth.voices[synth.voices.currentVoice].data, {
@@ -253,7 +257,7 @@ synth = {
               waveform = "",
               note = "&",
               duration = 0,
-              volume = 0
+              volume = nil
             }
           })
   
@@ -270,7 +274,8 @@ synth = {
               waveform = waveform,
               note = "r",
               duration = duration,
-              volume = synth.sequence.v
+              volume = volume,
+              envelope = envelope
             }
           })
           synth.voices[synth.voices.currentVoice].len = synth.voices[synth.voices.currentVoice].len + duration
@@ -314,11 +319,14 @@ synth = {
               waveform = waveform,
               note = note,
               duration = duration,
-              volume = synth.sequence.v
+              volume = volume,
+              envelope = envelope
             }
           })
           synth.voices[synth.voices.currentVoice].len = synth.voices[synth.voices.currentVoice].len + duration
         end
+
+        pos = pos + (newpos - 1)
   
       until newpos == 0
     end,
@@ -327,6 +335,7 @@ synth = {
       local note = args.note or "a"
       local lastNote = args.lastNote or ""
       local waveform = args.waveform or synth.sequence.osc
+      local volumeEnvelope = args.envelope or "default"
       local duration = args.duration
       local frequency = synth.baseFrequency
       local volume = args.volume or synth.sequence.v
@@ -347,10 +356,10 @@ synth = {
       local data = love.sound.newSoundData(duration * synth.sampleRate, synth.sampleRate, synth.bits, synth.channels)
       local envelope = 0
 
-      local attackSamples = synth.envelopes.env1.attack * synth.sampleRate
-      local decaySamples = attackSamples + synth.envelopes.env1.decay * synth.sampleRate
-      local sustainVolume = synth.envelopes.env1.sustain
-      local releaseSamples = synth.envelopes.env1.release * synth.sampleRate
+      local attackSamples = synth.envelopes[volumeEnvelope].attack * synth.sampleRate
+      local decaySamples = attackSamples + synth.envelopes[volumeEnvelope].decay * synth.sampleRate
+      local sustainVolume = synth.envelopes[volumeEnvelope].sustain
+      local releaseSamples = synth.envelopes[volumeEnvelope].release * synth.sampleRate
 
       for i = 0, duration * synth.sampleRate - 1 do
   

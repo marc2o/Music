@@ -131,6 +131,8 @@ function love.draw()
     end
   end
 
+  love.graphics.setColor(0.2, 0.6, 0.8)
+  love.graphics.print(__LOG.msg, love.graphics.getWidth() / 4, 300)
 end
 
 function love.quit()
