@@ -44,7 +44,7 @@ Default octave is 4.
 
 **Set volume: `v<num>`**
 
-**`<num>`** (value between 0 and 15)
+**`<num>`** (value between 0 and 100)
 
 **Set waveform: `@<num>`**
 
