@@ -130,6 +130,7 @@ function love.draw()
       lines.side = 1
     end
   end
+
 end
 
 function love.quit()

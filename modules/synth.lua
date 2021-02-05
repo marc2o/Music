@@ -176,6 +176,8 @@ synth = {
       local octave = 4
       local volume = 1
       local waveform = synth.sequence.osc
+      local envelopeNumber = 0
+      local attack, decay, sustain, release
   
       repeat
         --[[
@@ -183,31 +185,36 @@ synth = {
           but extended evaluating more commands and made compatible with various MML dialects 
         ]]
         local tie = ""
-        local c, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)%s-()[%a<>@&]")
+        local cmd, args, newpos = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)%s-()[%a<>@&]")
         
-        if not c then
+        if not cmd then
           -- might be the last command in the string.
-          c, args = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)")
+          cmd, args = string.match(string.sub(mml, pos), "^([%a<>@&])(%A-)")
           newpos = 0
         end
 
-        if not c then
+        if not cmd then
           -- might be a comment starting with # and ends with line break
-          c, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@&]")
+          cmd, args, newpos = string.match(string.sub(mml, pos), "^(#)(.-)\n()[%a<>@&]")
         end
 
-        if not c then
+        if not cmd then
+          -- might by an envelope definition
+          cmd, args, newpos = string.match(mml, "(@EN)(.-)\n()[%a<>&@]")
+        end
+
+        if not cmd then
           -- probably bad syntax.
           error("Malformed MML")
         end
   
         pos = pos + (newpos - 1)
   
-        if string.match(c, "%u") then -- capital letters indicate channels
-          synth.voices.currentVoice = c
+        if string.match(cmd, "%u") then -- capital letters indicate channels
+          synth.voices.currentVoice = cmd
           local voiceExists = false
           for k, v in pairs(synth.voices) do
-            if k == c then voiceExists = true end
+            if k == cmd then voiceExists = true end
           end
           if not voiceExists then
             synth.voices[synth.voices.currentVoice] = {}
@@ -217,20 +224,29 @@ synth = {
           end
         end
   
-        if c == "o" then -- set octave
+        if cmd == "o" then -- set octave
           octave = tonumber(args)
     
-        elseif c == "t" then -- set tempo in bpm
+        elseif cmd == "t" then -- set tempo in bpm
           synth.sequence.t = tonumber(args)
     
-        elseif c == "v" then -- set volume 0 to 15
+        elseif cmd == "v" then -- set volume 0 to 15
           synth.sequence.v = tonumber(args) / 15
     
-        elseif c == "@" then -- set waveform 1 to 5 for current voice
+        elseif cmd == "@" then -- set waveform 1 to 5 for current voice
           local waveforms = { "SIN", "SAW", "SQR", "TRI", "NSE" }
           waveform = waveforms[tonumber(args)]
 
-        elseif c == "&" then -- tie notes
+        elseif cmd == "@EN" then -- define envelope
+          envelopeNumber = string.match(args, "(%d+)")
+          local env = string.match(args, "{(.-)}")
+          local val = {}
+          for token in string.gmatch(env, "[^%s]+") do
+              table.insert(val, token)
+          end
+      
+        
+        elseif cmd == "&" then -- tie notes
           table.insert(synth.voices[synth.voices.currentVoice].data, {
             {
               waveform = "",
@@ -240,7 +256,7 @@ synth = {
             }
           })
   
-        elseif c == "r" or c == "p" or c == "w" then -- rest, pause (wait is treated as rest for now)
+        elseif cmd == "r" or cmd == "p" or cmd == "w" then -- rest, pause (wait is treated as rest for now)
           local duration
           if args ~= "" then
             duration = (1 / tonumber(args)) * (60 / synth.sequence.t)
@@ -258,26 +274,26 @@ synth = {
           })
           synth.voices[synth.voices.currentVoice].len = synth.voices[synth.voices.currentVoice].len + duration
   
-        elseif c == "l" then -- set note length
+        elseif cmd == "l" then -- set note length
           synth.sequence.l = tonumber(args)
     
-        elseif c == ">" then -- increase octave
+        elseif cmd == ">" then -- increase octave
           octave = octave + 1
     
-        elseif c == "<" then -- decrease octave
+        elseif cmd == "<" then -- decrease octave
           octave = octave - 1
   
-        elseif c:find("[a-h]") then -- play note using c, d, e, f, g, a, h or b
+        elseif cmd:find("[a-h]") then -- play note using c, d, e, f, g, a, h or b
           local note
           local mod = string.match(args, "[+#-]")
           if mod then
             if mod == "#" or mod == "+" then
-              note = c .. "+" .. octave
+              note = cmd .. "+" .. octave
             elseif mod == "-" then
-              note = c .. "-" .. octave
+              note = cmd .. "-" .. octave
             end
           else
-            note = c .. octave
+            note = cmd .. octave
           end
     
           local duration
