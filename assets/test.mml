@@ -1,8 +1,20 @@
 #TITLE test tune
-#COMPOSER none
+#COMPOSER marc2o
 
-t16
+@v1 = { 1 10 20 30 }
+@v2 = { 2 20 30 40 }
+@v3 = { 2 5 10 10 }
+@v4 = { 1 20 90 20 }
 
-A @3o4v15l8
-A e4&e4r4
-A crdrerfr gr
+t60
+
+A l8 o5 @v1 @1 v40
+A creedrffeegrffar ggeefrddcc<hr>crrr
+A creedrffeegrffar ggeefrddcc<hr>crrr
+
+B l2 o3 @2 @v2 v80
+B c. c4 < a. a4 > d. d4 f. f4
+B e. e4 d. d4 < a. a4 g. g
+
+C l2 o2 @v3 v100
+C  @1 c @5 c @1 c4c4 @5 c @1 c @5 c @1 c4c4 @5 c @1 c @5 c @1 c @5 c @1 c @5 c @1 c @5 c 
