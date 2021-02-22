@@ -3,6 +3,29 @@
 --]]
 
 require("modules.synth")
+require("modules.wav")
+
+function saveWave(sounddata, filename)
+  local channelCount = sounddata:getChannelCount()
+  local sampleRate   = sounddata:getSampleRate()
+  local bitDepth     = sounddata:getBitDepth()
+  local samples = {}
+  for i = 0, sounddata:getSampleCount() - 1 do
+    local sample = sounddata:getSample(i)
+    local n
+    local to16bit = sample * 32767
+    if (to16bit > 0) then
+      n = math.floor(math.min(to16bit, 32767))
+    else
+      n = math.floor(math.max(to16bit, -32768))
+    end
+    table.insert(samples, n)
+  end
+  local waveFile = wav.create_context(filename, "w")
+  waveFile.init(channelCount, sampleRate, bitDepth)
+  waveFile.write_samples_interlaced(samples)
+  waveFile.finish()
+end
 
 prettyTime = ""
 time = 0
@@ -193,7 +216,9 @@ function love.quit()
 end
 
 function love.load()
-  synth.load("assets/test.mml")
+  synth.load("assets/music.mml")
+  synth.init()
+  --saveWave(synth.audioData, "music.wav")
   synth.play()
   Mode.set("playing")
   startTime = love.timer.getTime()

@@ -100,15 +100,17 @@ synth = {
     load = function (path)
       synth.mml = love.filesystem.read("string", path)
     end,
+
+    init = function ()
+      synth.parseMML(synth.mml)
+      synth.renderAudio()  
+    end,
     
     isPlaying = function ()
       return synth.music:isPlaying()
     end,
 
     play = function ()
-      synth.parseMML(synth.mml)
-      synth.renderAudio()
-  
       synth.music = love.audio.newSource(synth.audioData)
       love.audio.play(synth.music)
     end,
