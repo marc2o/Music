@@ -108,8 +108,13 @@ lines = {
   end
 }
 
+local totalSamples = 0
+local currentSample = 0
+local timeElapsed = 0
+
 function love.draw()
   love.graphics.clear(0.1, 0.1, 0.1)
+
   love.graphics.setColor(0.8, 0.8, 0.8)
 
   love.graphics.print(
@@ -131,8 +136,37 @@ function love.draw()
     end
   end
 
-  love.graphics.setColor(0.2, 0.6, 0.8)
-  love.graphics.print(__LOG.msg, love.graphics.getWidth() / 4, 300)
+  if timeElapsed <= 0 then
+    currentSample = math.floor(time * synth.sampleRate)
+    timeElapsed = 5
+  end
+  timeElapsed = timeElapsed - 1
+  for i = 0, love.graphics.getWidth(), 4 do
+    local sample = 1
+    if currentSample + i + 20 <= totalSamples then
+      for s = i, i + 20 do
+        sample = sample + math.abs(synth.audioData:getSample(currentSample + s))
+      end
+      sample = sample / 20
+    end
+    love.graphics.setColor(0.8, 0.8, 0.8, 0.15)
+    love.graphics.rectangle(
+      "fill",
+      i,
+      love.graphics.getHeight() - love.graphics.getHeight() / 3,
+      2,
+      -sample * love.graphics.getHeight() / 2
+    )
+    love.graphics.setColor(0.8, 0.8, 0.8, 0.05)
+    love.graphics.rectangle(
+      "fill",
+      i,
+      love.graphics.getHeight() - love.graphics.getHeight() / 3 + 2,
+      2,
+      sample * love.graphics.getHeight() / 3
+    )
+  end
+
 end
 
 function love.quit()
@@ -142,9 +176,10 @@ function love.load()
   synth.load("assets/music.mml")
   synth.play()
   startTime = love.timer.getTime()
+  totalSamples = synth.audioData:getSampleCount()
 end
 
-function love.run()
+--[[function love.run()
   if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
 
   -- We don't want the first frame's dt to include time taken by love.load.
@@ -185,4 +220,4 @@ function love.run()
 
     if love.timer then love.timer.sleep(0.001) end
   end
-end
+end]]
