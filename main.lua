@@ -142,8 +142,8 @@ function love.draw()
   end
   timeElapsed = timeElapsed - 1
   for i = 0, love.graphics.getWidth(), 4 do
-    local sample = 1
-    if currentSample + i + 20 <= totalSamples then
+    local sample = 0
+    if currentSample + i + 20 < totalSamples then
       for s = i, i + 20 do
         sample = sample + math.abs(synth.audioData:getSample(currentSample + s))
       end
@@ -163,7 +163,7 @@ function love.draw()
       i,
       love.graphics.getHeight() - love.graphics.getHeight() / 3 + 2,
       2,
-      sample * love.graphics.getHeight() / 3
+      (sample * love.graphics.getHeight() / 3) + 2
     )
   end
 
