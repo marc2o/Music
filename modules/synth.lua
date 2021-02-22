@@ -23,6 +23,7 @@ synth = {
 
     mml = "",
     audioData = 0,
+    music = nil,
   
     envelopes = {
       default = {
@@ -100,12 +101,16 @@ synth = {
       synth.mml = love.filesystem.read("string", path)
     end,
     
+    isPlaying = function ()
+      return synth.music:isPlaying()
+    end,
+
     play = function ()
       synth.parseMML(synth.mml)
       synth.renderAudio()
   
-      local music = love.audio.newSource(synth.audioData)
-      love.audio.play(music)
+      synth.music = love.audio.newSource(synth.audioData)
+      love.audio.play(synth.music)
     end,
   
     renderAudio = function ()

@@ -4,45 +4,9 @@
 
 require("modules.synth")
 
-__LOG = {}
-__LOG.msg = ""
-function __LOG.add(msg)
-  local msg = msg or ""
-  if __LOG.msg ~= "" then
-    __LOG.msg = __LOG.msg .. ", " .. msg
-  else
-    __LOG.msg = msg
-  end
-end
-function __LOG.clr()
-  __LOG.msg = ""
-end
-
 prettyTime = ""
 time = 0
 startTime = 0
-
-function love.update(dt)
-  if dt < 1/50 then
-    love.timer.sleep(1/50 - dt)
-  end
-
-  if love.keyboard.isDown("escape") then
-    love.event.quit()
-  end
-
-  time = love.timer.getTime() - startTime
-  local minutes = math.floor(time / 60)
-  local seconds = time - minutes * 60
-  if seconds < 10 then
-    seconds = "0" .. string.format("%.2f", seconds)
-  else
-    seconds = string.format("%.2f", seconds)
-  end
-  if minutes < 10 then minutes = "0" .. minutes end
-  prettyTime =  minutes .. ":" .. seconds
-  --time = string.format("%.2f", love.timer.getTime() - startTime)
-end
 
 lines = {
   width = love.graphics.getWidth(),
@@ -108,13 +72,39 @@ lines = {
   end
 }
 
-local totalSamples = 0
-local currentSample = 0
-local timeElapsed = 0
+totalSamples = 0
+currentSample = 0
+timeElapsed = 0
 
-function love.draw()
-  love.graphics.clear(0.1, 0.1, 0.1)
 
+Mode = {
+  playing = {},
+  finished = {}
+}
+function Mode.set(mode)
+  local mode = mode or "loading"
+  u, d = Mode[mode].update, Mode[mode].draw
+end
+
+function Mode.playing.update(dt)
+  time = love.timer.getTime() - startTime
+  local minutes = math.floor(time / 60)
+  local seconds = time - minutes * 60
+  if seconds < 10 then
+    seconds = "0" .. string.format("%.2f", seconds)
+  else
+    seconds = string.format("%.2f", seconds)
+  end
+  if minutes < 10 then minutes = "0" .. minutes end
+  prettyTime =  minutes .. ":" .. seconds
+  --time = string.format("%.2f", love.timer.getTime() - startTime)
+
+  if not synth.isPlaying() then
+    Mode.set("finished")
+  end
+end
+
+function Mode.playing.draw()
   love.graphics.setColor(0.8, 0.8, 0.8)
 
   love.graphics.print(
@@ -166,58 +156,46 @@ function love.draw()
       (sample * love.graphics.getHeight() / 3) + 2
     )
   end
+end
 
+function Mode.finished.update(dt)
+end
+
+function Mode.finished.draw()
+  love.graphics.setColor(0.8, 0.8, 0.8)
+
+  love.graphics.print(
+    "finished.\n" .. prettyTime .. "\n\npress [ESC] to quit",
+    love.graphics.getWidth() / 4,
+    love.graphics.getHeight() / 2 - 12
+  )
+end
+
+function love.update(dt)
+  if dt < 1/50 then
+    love.timer.sleep(1/50 - dt)
+  end
+
+  if love.keyboard.isDown("escape") then
+    love.event.quit()
+  end
+
+  u(dt)
+end
+
+function love.draw()
+  love.graphics.clear(0.1, 0.1, 0.1)
+  
+  d()
 end
 
 function love.quit()
 end
 
 function love.load()
-  synth.load("assets/music.mml")
+  synth.load("assets/test.mml")
   synth.play()
+  Mode.set("playing")
   startTime = love.timer.getTime()
   totalSamples = synth.audioData:getSampleCount()
 end
-
---[[function love.run()
-  if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
-
-  -- We don't want the first frame's dt to include time taken by love.load.
-  if love.timer then love.timer.step() end
-
-  local dt = 0
-
-  -- Main loop time.
-  return function()
-    -- Process events.
-    if love.event then
-      love.event.pump()
-      for name, a,b,c,d,e,f in love.event.poll() do
-        if name == "quit" then
-          if not love.quit or not love.quit() then
-            return a or 0
-          end
-        end
-        love.handlers[name](a,b,c,d,e,f)
-      end
-    end
-
-    -- Update dt, as we'll be passing it to update
-    if love.timer then dt = love.timer.step() end
-
-    -- Call update and draw
-    if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
-
-    if love.graphics and love.graphics.isActive() then
-      love.graphics.origin()
-      -- don't need the following, since we're filling the whole screen
-      --love.graphics.clear(love.graphics.getBackgroundColor())
-
-      if love.draw then love.draw() end
-
-      love.graphics.present()
-    end
-
-    if love.timer then love.timer.sleep(0.001) end
-  end
-end]]
