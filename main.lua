@@ -5,6 +5,8 @@
 require("modules.synth")
 require("modules.wav")
 
+function math.clamp(low, n, high) return math.min(math.max(n, low), high) end
+
 function saveWave(sounddata, filename)
   local channelCount = sounddata:getChannelCount()
   local sampleRate   = sounddata:getSampleRate()
@@ -13,12 +15,8 @@ function saveWave(sounddata, filename)
   for i = 0, sounddata:getSampleCount() - 1 do
     local sample = sounddata:getSample(i)
     local n
-    local to16bit = sample * 32767
-    if (to16bit > 0) then
-      n = math.floor(math.min(to16bit, 32767))
-    else
-      n = math.floor(math.max(to16bit, -32768))
-    end
+    local to16bit = sample * 32768
+    n = math.clamp(-32768, to16bit, 32767)
     table.insert(samples, n)
   end
   local waveFile = wav.create_context(filename, "w")
