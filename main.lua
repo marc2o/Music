@@ -129,7 +129,7 @@ function Mode.playing.draw()
   love.graphics.setColor(0.8, 0.8, 0.8)
 
   love.graphics.print(
-    "playing…\n" .. prettyTime .. "\n\npress [ESC] to quit",
+    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit",
     love.graphics.getWidth() / 4,
     love.graphics.getHeight() / 2 - 12
   )

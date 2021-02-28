@@ -9,6 +9,9 @@ synth = {
     channels = 1,
     baseFrequency = 440,
     amplitude = 1,
+    title = "",
+    composer = "",
+    programmer = "",
   
     sequence = {
       osc = "TRI", -- default sound
@@ -183,6 +186,16 @@ synth = {
       local waveform = synth.sequence.osc
       local envelope = nil
   
+      for cmd, args, next in string.gmatch(mml, "(#%u+)%s+(.-)\n()") do
+        if cmd == "#TITLE" then
+          synth.title = args
+        elseif cmd == "#COMPOSER" then
+          synth.composer = args
+        elseif cmd == "#PROGRAMMER" then
+          synth.programmer = args
+        end
+      end
+
       for cmd, args, next in string.gmatch(mml, "(@v%d+).-=(.-)\n()") do
         local num = string.match(cmd, "(%d+)")
         local cmd = string.match(cmd, "(@v)")
