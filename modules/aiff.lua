@@ -1,6 +1,13 @@
 -- WORK IN PROGRESS
+function math.clamp(low, n, high) return math.min(math.max(n, low), high) end
 
 aiff = {
+    FORM = {
+        ID = "FORM",
+        dataSize = 0,
+        type = "AIFF",
+        chunks = 0
+    },
     COMM = {
         -- Common Chunk (required)
         ID = "COMM",
@@ -39,6 +46,38 @@ aiff = {
     writeToFile = function (file, content)
         file:write(content)
     end,
+    writeFile = function (file, args, ...)
+        file:write(aiff.getChunk({
+            ID = "FORM",
+            dataSize = 13,
+            type = "AIFF",
+            chunks = 4
+        }))
+        file:write(aiff.getChunk({
+            ID = "COMM",
+            dataSize = args.dataSize,
+            numChannels = args.numChannels,
+            numSampleFrames = args.numSampleFrames,
+            sampleSize = args.sampleSize,
+            sampleRate = args.sampleRate
+        }))
+        -- write data begin...
+        file:write(aiff.getChunk({
+            ID = "SNDD",
+            dataSize = args.dataSize,
+            sampleSize = args.sampleSize,
+            soundData = args.soundData
+        }))
+        -- write data end.
+        file:write(aiff.getChunk({
+            ID = "NAME",
+            text = args.title
+        }))
+        file:write(aiff.getChunk({
+            ID = "AUTH",
+            text = args.composer
+        }))
+    end,
     closeFile = function (file)
         file:close()
     end,
@@ -65,6 +104,14 @@ aiff = {
     end,
 
     getChunk = function (args, ... )
+        if args.ID == "FORM" then
+            aiff[args.ID].dataSize = aiff.numberToBytes(args.dataSize, 4)
+            aiff[args.ID].chunks = aiff.numberToBytes(args.chunks, 1)
+            return aiff[args.ID].ID ..
+                aiff[args.ID].dataSize ..
+                aiff[args.ID].type ..
+                aiff[args.ID].chunks
+        end
         if args.ID == "COMM" then
             aiff[args.ID].dataSize = aiff.numberToBytes(args.dataSize, 4)
             aiff[args.ID].numChannels = aiff.numberToBytes(args.numChannels, 2)
@@ -85,11 +132,22 @@ aiff = {
             aiff[args.ID].dataSize = aiff.numberToBytes(args.dataSize, 4)
             aiff[args.ID].offset = aiff.numberToBytes(0, 4)
             aiff[args.ID].blockSize = aiff.numberToBytes(0, 4)
+            aiff[args.ID].soundData = ""
+
+            --for i = 0, args.soundData:getSampleCount() - 1 do
+            local size = 2^args.sampleSize
+            for i = 0, 10000 do
+                local sample = args.soundData:getSample(i) * size
+                sample = math.clamp(-size, sample, size - 1)
+                sample = aiff.numberToBytes(sample, 2)
+                aiff[args.ID].soundData = aiff[args.ID].soundData .. sample
+            end
 
             return aiff[args.ID].ID ..
                 aiff[args.ID].dataSize ..
                 aiff[args.ID].offset ..
-                aiff[args.ID].blockSize
+                aiff[args.ID].blockSize ..
+                aiff[args.ID].soundData
         end
         if args.ID == "NAME" then
             aiff[args.ID].dataSize = aiff.numberToBytes(string.len(args.text), 4)

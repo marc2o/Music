@@ -5,8 +5,6 @@
 require("modules.synth")
 require("modules.aiff")
 
-function math.clamp(low, n, high) return math.min(math.max(n, low), high) end
-
 prettyTime = ""
 time = 0
 startTime = 0
@@ -201,33 +199,16 @@ function love.load()
   
   local content = ""
   local file = aiff.createFile("music")
-  content = aiff.getChunk({
-    ID = "COMM",
+  aiff.writeFile(file, {
     dataSize = synth.audioData:getSampleCount() * synth.bits / 8,
     numChannels = synth.channels,
     numSampleFrames = synth.audioData:getSampleCount(),
     sampleSize = synth.bits,
-    sampleRate = synth.sampleRate
+    sampleRate = synth.sampleRate,
+    soundData = synth.audioData,
+    title = synth.title,
+    composer = synth.composer
   })
-  aiff.writeToFile(file, content)
-
-  content = aiff.getChunk({
-    ID = "SNDD",
-    dataSize = synth.audioData:getSampleCount() * synth.bits / 8
-  })
-  aiff.writeToFile(file, content)
-
-  content = aiff.getChunk({
-    ID = "NAME",
-    text = synth.title
-  })
-  aiff.writeToFile(file, content)
-
-  content = aiff.getChunk({
-    ID = "AUTH",
-    text = synth.composer
-  })
-  aiff.writeToFile(file, content)
   aiff.closeFile(file)
 
   synth.play()
