@@ -73,6 +73,6 @@ Call `@v<num>` to use the volume envelope
 
 ## To do…
 
-* saving songs as .wav
+* saving songs as .aiff – I abandoned the .wav-format and started writing my own .aiff-encoder from a scratch (based on [this description](http://paulbourke.net/dataformats/audio/))
 * a way of defining LFO macros
-* and maybe trying to implement some of the stuff from [PPMCK MML](https://shauninman.com/assets/downloads/ppmck_guide.html)
+* and maybe trying to implement some more of the stuff from [PPMCK MML](https://shauninman.com/assets/downloads/ppmck_guide.html)

@@ -3,27 +3,9 @@
 --]]
 
 require("modules.synth")
-require("modules.wav")
+require("modules.aiff")
 
 function math.clamp(low, n, high) return math.min(math.max(n, low), high) end
-
-function saveWave(sounddata, filename)
-  local channelCount = sounddata:getChannelCount()
-  local sampleRate   = sounddata:getSampleRate()
-  local bitDepth     = sounddata:getBitDepth()
-  local samples = {}
-  for i = 0, sounddata:getSampleCount() - 1 do
-    local sample = sounddata:getSample(i)
-    local n
-    local to16bit = sample * 32768
-    n = math.clamp(-32768, to16bit, 32767)
-    table.insert(samples, n)
-  end
-  local waveFile = wav.create_context(filename, "w")
-  waveFile.init(channelCount, sampleRate, bitDepth)
-  waveFile.write_samples_interlaced(samples)
-  waveFile.finish()
-end
 
 prettyTime = ""
 time = 0
@@ -216,7 +198,38 @@ end
 function love.load()
   synth.load("assets/music.mml")
   synth.init()
-  --saveWave(synth.audioData, "music.wav")
+  
+  local content = ""
+  local file = aiff.createFile("music")
+  content = aiff.getChunk({
+    ID = "COMM",
+    dataSize = synth.audioData:getSampleCount() * synth.bits / 8,
+    numChannels = synth.channels,
+    numSampleFrames = synth.audioData:getSampleCount(),
+    sampleSize = synth.bits,
+    sampleRate = synth.sampleRate
+  })
+  aiff.writeToFile(file, content)
+
+  content = aiff.getChunk({
+    ID = "SNDD",
+    dataSize = synth.audioData:getSampleCount() * synth.bits / 8
+  })
+  aiff.writeToFile(file, content)
+
+  content = aiff.getChunk({
+    ID = "NAME",
+    text = synth.title
+  })
+  aiff.writeToFile(file, content)
+
+  content = aiff.getChunk({
+    ID = "AUTH",
+    text = synth.composer
+  })
+  aiff.writeToFile(file, content)
+  aiff.closeFile(file)
+
   synth.play()
   Mode.set("playing")
   startTime = love.timer.getTime()
