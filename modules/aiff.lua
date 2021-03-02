@@ -15,7 +15,7 @@ aiff = {
         local soundData = args.soundData
         local sampleRate = soundData:getSampleRate()
         local sampleSize = soundData:getBitDepth()
-        local numChannels = soundData:getChannels()
+        local numChannels = soundData:getChannelCount()
         local numSampleFrames = soundData:getSampleCount() / numChannels
         local dataSize = soundData:getDuration() * sampleRate * sampleSize / 8
 
@@ -44,7 +44,7 @@ aiff = {
         })
 
         local localChunks = aiff.COMM .. aiff.SNDD .. aiff.NAME .. aiff.AUTH
-        local fileSize = string.len(localChunks)
+        local fileSize = string.len(localChunks) + 8 + 3
         aiff.FORM = aiff.getChunk({
             ID = "FORM",
             dataSize = fileSize,
@@ -87,13 +87,25 @@ aiff = {
                 "AIFF"
         end
         if args.ID == "COMM" then
+            local nfreq = string.char(0x40)
+            if args.sampleRate == 11025 then
+                nfreq = nfreq .. string.char(0x0c)
+            elseif args.sampleRate == 22050 then
+                nfreq = nfreq .. string.char(0x0d)
+            else
+                nfreq = nfreq .. string.char(0x0e)
+            end
+            nfreq = nfreq .. string.char(0xac) .. string.char(0x44)
+            for i = 1, 6 do
+                nfreq = nfreq .. string.char(0)
+            end
             return
                 "COMM" ..
                 aiff.numberToBytes(args.dataSize, 4) ..
                 aiff.numberToBytes(args.numChannels, 2) ..
                 aiff.numberToBytes(args.numSampleFrames, 4) ..
                 aiff.numberToBytes(args.sampleSize, 2) ..
-                aiff.numberToBytes(args.sampleRate, 4)..
+                nfreq ..
                 "NONE" ..
                 "not compressed"
         end
