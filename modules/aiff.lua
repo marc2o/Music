@@ -19,43 +19,40 @@ aiff = {
         local numSampleFrames = soundData:getSampleCount() / numChannels
         local dataSize = soundData:getDuration() * sampleRate * sampleSize / 8
 
-        -- local cjunks
-        aiff.COMM = aiff.getChunk({
+        file:write("FORM????AIFF")
+
+        file:write(aiff.getChunk({
             ID = "COMM",
             dataSize = dataSize,
             numChannels = numChannels,
             numSampleFrames = numSampleFrames,
             sampleSize = sampleSize,
             sampleRate = sampleRate
-        })        
-        aiff.SNDD = aiff.getChunk({
+        }))
+        file:write(aiff.getChunk({
             ID = "SNDD",
             dataSize = dataSize,
             sampleSize = sampleSize,
             soundData = soundData
-        })
-        aiff.NAME = aiff.getChunk({
+        }))
+        file:write(aiff.getChunk({
             ID = "NAME",
             text = args.title
-        })
-        aiff.AUTH = aiff.getChunk({
+        }))
+        file:write(aiff.getChunk({
             ID = "AUTH",
             text = args.composer
-        })
+        }))
 
-        local localChunks = aiff.COMM .. aiff.SNDD .. aiff.NAME .. aiff.AUTH
-        local fileSize = string.len(localChunks) + 8 + 3
-        aiff.FORM = aiff.getChunk({
-            ID = "FORM",
-            dataSize = fileSize,
-            --dataSize = args.dataSize + string.len(args.title) + string.len(args.composer) + 4 * 8,
-            type = "AIFF"
-        })
-
-        file:write(aiff.FORM .. localChunks)
+        local fileSize = file:seek()
+        file:seek("set", 4)
+        file:write(aiff.numberToBytes(fileSize - 8, 4))
+        --file:seek("set", 40)
+        --file:write(aiff.numberToBytes(fileSize - 44, 4))
     end,
     closeFile = function (file)
         file:close()
+        file = nil
     end,
 
     numberToBytes = function (number, numberOfBytes)
