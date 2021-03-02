@@ -200,11 +200,6 @@ function love.load()
   local content = ""
   local file = aiff.createFile("music")
   aiff.writeFile(file, {
-    dataSize = synth.audioData:getSampleCount() * synth.bits / 8,
-    numChannels = synth.channels,
-    numSampleFrames = synth.audioData:getSampleCount(),
-    sampleSize = synth.bits,
-    sampleRate = synth.sampleRate,
     soundData = synth.audioData,
     title = synth.title,
     composer = synth.composer
