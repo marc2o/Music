@@ -111,9 +111,9 @@ aiff = {
         end
         if args.ID == "SNDD" then
             local soundData = ""
+            local size = 2^args.sampleSize / 2
             --for i = 0, args.soundData:getSampleCount() - 1 do
-            local size = 2^args.sampleSize
-            for i = 0, 10000 do
+            for i = 0, 150000 do
                 local sample = args.soundData:getSample(i) * size
                 sample = math.clamp(-size, sample, size - 1)
                 sample = aiff.numberToBytes(sample, args.sampleSize / 8)
