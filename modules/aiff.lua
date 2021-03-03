@@ -24,7 +24,7 @@ aiff = {
             sampleRate = sampleRate
         }))
         file:write(aiff.getChunk({
-            ID = "SNDD",
+            ID = "SSND",
             dataSize = dataSize
         }))
 
@@ -109,13 +109,13 @@ aiff = {
                 aiff.numberToBytes(args.numChannels, 2) ..
                 aiff.numberToBytes(args.numSampleFrames, 4) ..
                 aiff.numberToBytes(args.sampleSize, 2) ..
-                nfreq ..
-                "NONE" ..
-                "not compressed"
+                nfreq --..
+                --"NONE" ..
+                --"not compressed"
         end
-        if args.ID == "SNDD" then
+        if args.ID == "SSND" then
             return
-                "SNDD" ..
+                "SSND" ..
                 aiff.numberToBytes(args.dataSize, 4) ..
                 aiff.numberToBytes(0, 4) .. -- offset
                 aiff.numberToBytes(0, 4) -- block size
