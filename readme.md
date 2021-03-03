@@ -8,6 +8,8 @@ Music is created using MML, a simple [Music Macro Language](https://en.wikipedia
 
 The oscillator code is based on the [Denver Synthesizer Library](https://love2d.org/forums/viewtopic.php?t=79499) and the MML parser is a changed and extended version of the one used in [love-mml](https://github.com/GoonHouse/love-mml).
 
+Songs can be saved as AIFF. I have written the save routine from a scratch. Just press *s* during playback to toggle saving on exit.
+
 The MML instrucions set is not complete, yet – and not really standard.
 
 ## Already implemented
@@ -73,6 +75,5 @@ Call `@v<num>` to use the volume envelope
 
 ## To do…
 
-* saving songs as .aiff – I abandoned the .wav-format and started writing my own .aiff-encoder from a scratch (based on the descriptions [here](http://paulbourke.net/dataformats/audio/), [here](https://wiki.multimedia.cx/index.php/Audio_Interchange_File_Format) and [here](http://paulbourke.net/dataformats/audio/))
 * a way of defining LFO macros
 * and maybe trying to implement some more of the stuff from [PPMCK MML](https://shauninman.com/assets/downloads/ppmck_guide.html)

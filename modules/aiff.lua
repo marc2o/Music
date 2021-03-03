@@ -17,7 +17,7 @@ aiff = {
 
         file:write(aiff.getChunk({
             ID = "COMM",
-            dataSize = dataSize,
+            dataSize = 18,
             numChannels = numChannels,
             numSampleFrames = numSampleFrames,
             sampleSize = sampleSize,
