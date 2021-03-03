@@ -8,6 +8,7 @@ require("modules.aiff")
 prettyTime = ""
 time = 0
 startTime = 0
+saveOnExit = false
 
 lines = {
   width = love.graphics.getWidth(),
@@ -77,7 +78,6 @@ totalSamples = 0
 currentSample = 0
 timeElapsed = 0
 
-
 Mode = {
   playing = {},
   finished = {}
@@ -109,7 +109,7 @@ function Mode.playing.draw()
   love.graphics.setColor(0.8, 0.8, 0.8)
 
   love.graphics.print(
-    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit",
+    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press s to toggle)",
     love.graphics.getWidth() / 4,
     love.graphics.getHeight() / 2 - 12
   )
@@ -166,7 +166,7 @@ function Mode.finished.draw()
   love.graphics.setColor(0.8, 0.8, 0.8)
 
   love.graphics.print(
-    "finished.\n" .. prettyTime .. "\n\npress [ESC] to quit",
+    "finished.\n" .. prettyTime .. "\n\npress [ESC] to quit" .. "\n\n Saving on exit: " .. tostring(saveOnExit) .. " (press s to toggle)",
     love.graphics.getWidth() / 4,
     love.graphics.getHeight() / 2 - 12
   )
@@ -184,6 +184,12 @@ function love.update(dt)
   u(dt)
 end
 
+function love.keyreleased(key)
+  if key == "s" then
+    saveOnExit = not saveOnExit
+  end
+end
+
 function love.draw()
   love.graphics.clear(0.1, 0.1, 0.1)
   
@@ -191,21 +197,21 @@ function love.draw()
 end
 
 function love.quit()
+  if saveOnExit then
+    local content = ""
+    local file = aiff.createFile("music")
+    aiff.writeFile(file, {
+      soundData = synth.audioData,
+      title = synth.title,
+      composer = synth.composer
+    })
+    aiff.closeFile(file)
+  end
 end
 
 function love.load()
   synth.load("assets/music.mml")
   synth.init()
-  
-  local content = ""
-  local file = aiff.createFile("music")
-  aiff.writeFile(file, {
-    soundData = synth.audioData,
-    title = synth.title,
-    composer = synth.composer
-  })
-  aiff.closeFile(file)
-
   synth.play()
   Mode.set("playing")
   startTime = love.timer.getTime()

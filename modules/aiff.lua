@@ -2,12 +2,6 @@
 function math.clamp(low, n, high) return math.min(math.max(n, low), high) end
 
 aiff = {
-    FORM = "",
-    COMM = "",
-    SNDD = "",
-    NAME = "",
-    AUTH = "",
-
     createFile = function (filename)
         return io.open(filename .. ".aiff", "w")
     end,
@@ -31,8 +25,7 @@ aiff = {
         }))
         file:write(aiff.getChunk({
             ID = "SNDD",
-            dataSize = dataSize,
-            sampleSize = sampleSize
+            dataSize = dataSize
         }))
 
         aiff.writePCM({
@@ -53,8 +46,6 @@ aiff = {
         local fileSize = file:seek()
         file:seek("set", 4)
         file:write(aiff.numberToBytes(fileSize - 8, 4))
-        --file:seek("set", 40)
-        --file:write(aiff.numberToBytes(fileSize - 44, 4))
     end,
     closeFile = function (file)
         file:close()
