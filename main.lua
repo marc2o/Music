@@ -199,7 +199,7 @@ end
 function love.quit()
   if saveOnExit then
     local content = ""
-    local file = aiff.createFile("music")
+    local file = aiff.createFile(synth.title .. " by " .. synth.composer)
     aiff.writeFile(file, {
       soundData = synth.audioData,
       title = synth.title,
