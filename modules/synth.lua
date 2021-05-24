@@ -280,9 +280,9 @@ synth = {
         elseif cmd == "r" or cmd == "p" or cmd == "w" then -- rest, pause (wait is treated as rest for now)
           local duration
           if args ~= "" then
-            duration = (1 / tonumber(args)) * (60 / synth.sequence.t)
+            duration = (4 / tonumber(args)) * (60 / synth.sequence.t)
           else
-            duration = (1 / synth.sequence.l) * (60 / synth.sequence.t)
+            duration = (4 / synth.sequence.l) * (60 / synth.sequence.t)
           end
   
           table.insert(synth.voices[synth.voices.currentVoice].data, {
@@ -321,9 +321,9 @@ synth = {
           local duration
           local len = string.match(args, "%d+")
           if len then
-            duration = (1 / tonumber(len)) * (60 / synth.sequence.t)
+            duration = (4 / tonumber(len)) * (60 / synth.sequence.t)
           else
-            duration = (1 / synth.sequence.l) * (60 / synth.sequence.t)
+            duration = (4 / synth.sequence.l) * (60 / synth.sequence.t)
           end
     
           if string.find(args, "%.") then -- dottet note
