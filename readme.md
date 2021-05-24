@@ -77,3 +77,5 @@ Call `@v<num>` to use the volume envelope
 
 * a way of defining LFO macros
 * and maybe trying to implement some more of the stuff from [PPMCK MML](https://shauninman.com/assets/downloads/ppmck_guide.html)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/P5P04PMZP)
