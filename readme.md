@@ -10,7 +10,9 @@ The oscillator code is based on the [Denver Synthesizer Library](https://love2d.
 
 Songs can be saved as AIFF. I have written the save routine from a scratch. Just press *s* during playback to toggle saving on exit. The composer and title info, if specified in the mml, will be written to the AIFF as well.
 
-The MML instrucions set is not complete, yet – and not really standard.
+The MML instrucions set is not complete, yet – and not really standard in some aspects.
+
+**Update:** This programm doesn’t any longer just starts playing the »built-in« music. Instead you can now open your own mml-file per drag-n-drop on the LÖVE app icon or window while this program is running (as long as your mml-file is compatible with this programm, of course 😊).
 
 ## Already implemented
 

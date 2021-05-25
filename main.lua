@@ -2,6 +2,10 @@
   (c) 2021 marc2o
 --]]
 
+function __ERROR(msg)
+  local success = love.window.showMessageBox( "ERROR", msg, "info", true )
+end
+
 require("modules.synth")
 require("modules.aiff")
 
@@ -74,46 +78,7 @@ lines = {
   end
 }
 
-totalSamples = 0
-currentSample = 0
-timeElapsed = 0
-
-Mode = {
-  playing = {},
-  finished = {}
-}
-function Mode.set(mode)
-  local mode = mode or "loading"
-  u, d = Mode[mode].update, Mode[mode].draw
-end
-
-function Mode.playing.update(dt)
-  time = love.timer.getTime() - startTime
-  local minutes = math.floor(time / 60)
-  local seconds = time - minutes * 60
-  if seconds < 10 then
-    seconds = "0" .. string.format("%.2f", seconds)
-  else
-    seconds = string.format("%.2f", seconds)
-  end
-  if minutes < 10 then minutes = "0" .. minutes end
-  prettyTime =  minutes .. ":" .. seconds
-  --time = string.format("%.2f", love.timer.getTime() - startTime)
-
-  if not synth.isPlaying() then
-    Mode.set("finished")
-  end
-end
-
-function Mode.playing.draw()
-  love.graphics.setColor(0.8, 0.8, 0.8)
-
-  love.graphics.print(
-    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press s to toggle)",
-    love.graphics.getWidth() / 4,
-    love.graphics.getHeight() / 2 - 12
-  )
-
+function drawLines()
   lines.draw(lines.side - 1, "erase")
   lines.draw(lines.side, "draw")
 
@@ -157,6 +122,65 @@ function Mode.playing.draw()
       (sample * love.graphics.getHeight() / 3) + 2
     )
   end
+end
+
+totalSamples = 0
+currentSample = 0
+timeElapsed = 0
+
+Mode = {
+  playing = {},
+  waiting = {},
+  loading = {},
+  finished = {}
+}
+function Mode.set(mode)
+  local mode = mode or "loading"
+  u, d = Mode[mode].update, Mode[mode].draw
+end
+
+function Mode.waiting.update(dt)
+end
+
+function Mode.waiting.draw()
+  love.graphics.setColor(0.8, 0.8, 0.8)
+
+  love.graphics.print(
+    "\ndrag-n-drop mml file to open..." .. "\n\npress [ESC] to quit",
+    love.graphics.getWidth() / 4,
+    love.graphics.getHeight() / 2 - 12
+  )
+  drawLines()
+end
+
+function Mode.playing.update(dt)
+  time = love.timer.getTime() - startTime
+  local minutes = math.floor(time / 60)
+  local seconds = time - minutes * 60
+  if seconds < 10 then
+    seconds = "0" .. string.format("%.2f", seconds)
+  else
+    seconds = string.format("%.2f", seconds)
+  end
+  if minutes < 10 then minutes = "0" .. minutes end
+  prettyTime =  minutes .. ":" .. seconds
+  --time = string.format("%.2f", love.timer.getTime() - startTime)
+
+  if not synth.isPlaying() then
+    Mode.set("finished")
+  end
+end
+
+function Mode.playing.draw()
+  love.graphics.setColor(0.8, 0.8, 0.8)
+
+  love.graphics.print(
+    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press s to toggle)",
+    love.graphics.getWidth() / 4,
+    love.graphics.getHeight() / 2 - 12
+  )
+
+  drawLines()
 end
 
 function Mode.finished.update(dt)
@@ -209,10 +233,18 @@ function love.quit()
   end
 end
 
+local __musicFilePath = ""
 function love.load()
-  synth.load("assets/music.mml")
+  Mode.set("waiting")
+end
+
+function love.filedropped(file)
+  synth.stop()
+
+  synth.load(file)
   synth.init()
   synth.play()
+
   Mode.set("playing")
   startTime = love.timer.getTime()
   totalSamples = synth.audioData:getSampleCount()

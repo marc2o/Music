@@ -99,9 +99,30 @@ synth = {
         end
       end    
     },
+
+    reset = function ()
+      synth.voices = {
+        currentVoice = ""
+      }
   
-    load = function (path)
-      synth.mml = love.filesystem.read("string", path)
+      synth.mml = ""
+      synth.audioData = 0
+      synth.music = nil
+    
+      synth.envelopes = {
+        default = {
+          attack = 0,
+          decay = 0,
+          sustain = 1,
+          release = 0
+        }
+      }
+    end,
+  
+    load = function (file)
+      synth.reset()
+      synth.mml = file:read()
+      --synth.mml = love.filesystem.read("string", path)
     end,
 
     init = function ()
@@ -116,6 +137,10 @@ synth = {
     play = function ()
       synth.music = love.audio.newSource(synth.audioData)
       love.audio.play(synth.music)
+    end,
+
+    stop = function ()
+      love.audio.stop()
     end,
   
     renderAudio = function ()
