@@ -1,0 +1,43 @@
+#TITLE Always Be My Baby
+#COMPOSER Mariah Carey
+#PROGRAMMER marc2o
+
+@v1 = { 2 80 40 50 }
+@v2 = { 2 90 40 30 }
+@v3 = { 2 40 20 10 }
+@v4 = { 2 20 10 10 }
+@v5 = { 2 5 10 0 }
+
+t100
+
+A @3 o3 @v1 l4 v80
+A c2.<g8.f2.r4r16 a2.e8.f2r16g2>
+A c2.<g8.f2.r4r16 a2.e8.f2r16g2>
+A c2.<g8.f2.r4r16 a2.e8.f2r16g2>
+A c2.<g8.f2.r4r16 a2.e8.f2r16g2>
+
+B @1 o4 l4 @v2
+B r4r8.l16cder2r4rcderferdcr
+B r4r8.l16cder2r4rcderferdcr
+B r1r1r1r1
+B r1r1r1r1
+B r4r8.l16cder2r4rcderferdcr
+B r4r8.l16cder2r4rcderferdcr
+
+C @2 o5 @v3
+C r1r1r1r1
+C l8<g>dc<g>dc16<g4r16 g>dc<g>l16cdee4r l8cageeged16c8. r<aa>egec16d8c4
+C l16 r<gg>ddc8<g4 l8g>dc<g>l16cdee4r l8cageeged16c8. r<aa>egec16d8
+C c1
+
+D @2 o2 @v4 l8 v100
+D r16c.c.c>c.<c.c <f.f.f>f.<f.f a.a.a>a.<a.a >a.a.a>g.<r8.r8
+D r16c.c.c>c.<c.c <f.f.f>f.<f.f a.a.a>a.<a.a >a.a.a>g.<r8.r8
+D r16c.c.c>c.<c.c <f.f.f>f.<f.f a.a.a>a.<a.a >a.a.a>g.<r8.r8
+D r16c.c.c>c.<c.c <f.f.f>f.<f.f a.a.a>a.<a.a >a.a.a>g.<r8.r8
+
+E @5 o1 @v5 l8 v100
+E rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr
+E rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr
+E rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr
+E rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr rv60>c<v100crv60>cc<v100cr
