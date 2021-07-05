@@ -142,6 +142,14 @@ synth = {
     stop = function ()
       love.audio.stop()
     end,
+
+    pause = function ()
+      if synth.music:isPlaying() then
+        love.audio.pause(synth.music)
+      else
+        love.audio.play(synth.music)
+      end
+    end,
   
     renderAudio = function ()
       local key = next(synth.voices)

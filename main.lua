@@ -12,6 +12,7 @@ require("modules.aiff")
 prettyTime = ""
 time = 0
 startTime = 0
+pauseTime = 0
 saveOnExit = false
 
 lines = {
@@ -154,7 +155,7 @@ function Mode.waiting.draw()
 end
 
 function Mode.playing.update(dt)
-  time = love.timer.getTime() - startTime
+  time = love.timer.getTime() - startTime - pauseTime
   local minutes = math.floor(time / 60)
   local seconds = time - minutes * 60
   if seconds < 10 then
@@ -175,7 +176,7 @@ function Mode.playing.draw()
   love.graphics.setColor(0.8, 0.8, 0.8)
 
   love.graphics.print(
-    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press s to toggle)",
+    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit, [space] for pause, [x] to stop" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press [s] to toggle)",
     love.graphics.getWidth() / 4,
     love.graphics.getHeight() / 2 - 12
   )
@@ -184,13 +185,17 @@ function Mode.playing.draw()
 end
 
 function Mode.finished.update(dt)
+  pauseTime = love.timer.getTime() - startTime - time
+  if synth.isPlaying() then
+    Mode.set("playing")
+  end
 end
 
 function Mode.finished.draw()
   love.graphics.setColor(0.8, 0.8, 0.8)
 
   love.graphics.print(
-    "finished.\n" .. prettyTime .. "\n\npress [ESC] to quit" .. "\n\n Saving on exit: " .. tostring(saveOnExit) .. " (press s to toggle)",
+    "paused or stopped/finished.\n" .. prettyTime .. "\n\npress [ESC] to quit, [space] for pause, [x] to stop" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press [s] to toggle)",
     love.graphics.getWidth() / 4,
     love.graphics.getHeight() / 2 - 12
   )
@@ -211,6 +216,12 @@ end
 function love.keyreleased(key)
   if key == "s" then
     saveOnExit = not saveOnExit
+  end
+  if key == "space" then
+    synth.pause()
+  end
+  if key == "x" then
+    synth.stop()
   end
 end
 
