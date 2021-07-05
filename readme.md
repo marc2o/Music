@@ -12,7 +12,7 @@ Songs can be saved as AIFF. I have written the save routine from a scratch. Just
 
 The MML instrucions set is not complete, yet – and not really standard in some aspects.
 
-**Update:** This program no longer starts playing the »built-in« music. Instead you can now open your own mml-file per drag-n-drop on the LÖVE app icon or window while this program is running (as long as your mml-file is compatible with this programm, of course 😊).
+Open mml files per drag-n-drop on the LÖVE app icon or window while _Music_ is running (as long as your mml file is compatible with this programm, of course 😊). The music file is saved at LÖVE’s default location (see [love.filesystem](https://love2d.org/wiki/love.filesystem)).
 
 ## Already implemented
 

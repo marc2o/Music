@@ -3,7 +3,8 @@ function math.clamp(low, n, high) return math.min(math.max(n, low), high) end
 
 aiff = {
     createFile = function (filename)
-        return io.open(filename .. ".aiff", "w")
+        --return io.open(filename .. ".aiff", "w")
+        return love.filesystem.newFile(filename .. ".aiff", "w")
     end,
     writeFile = function (file, args, ...)
         local soundData = args.soundData
@@ -43,8 +44,11 @@ aiff = {
             text = args.composer
         }))
 
-        local fileSize = file:seek()
-        file:seek("set", 4)
+        local fileInfo = love.filesystem.getInfo(file:getFilename())
+        local fileSize = fileInfo.size
+        file:seek(4)
+        --local fileSize = file:seek()
+        --file:seek("set", 4)
         file:write(aiff.numberToBytes(fileSize - 8, 4))
     end,
     closeFile = function (file)
