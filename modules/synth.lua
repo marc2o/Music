@@ -127,7 +127,8 @@ synth = {
 
     init = function ()
       synth.parseMML(synth.mml)
-      synth.renderAudio()  
+      synth.renderAudio()
+      synth.normalize()
     end,
     
     isPlaying = function ()
@@ -151,6 +152,23 @@ synth = {
       end
     end,
   
+    normalize = function()
+      local samples = synth.audioData:getSampleCount() - 1
+      local peak = 0
+
+      for i = 0, samples do
+        local sample = math.abs(synth.audioData:getSample(i))
+        if sample > peak then peak = sample end
+      end
+
+      for i = 0, samples do
+        local sample = synth.audioData:getSample(i)
+        local value = (peak - math.abs(sample) - 0.001) / 2
+        sample = sample / (peak - value)
+        synth.audioData:setSample(i, sample)
+      end
+    end,
+
     renderAudio = function ()
       local key = next(synth.voices)
       local maxLength = synth.voices[key].len
