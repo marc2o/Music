@@ -37,10 +37,6 @@ synth = {
       }
     },
 
-    lowFrequencyOscillators = {
-      lfo1 = 0.5 - 0.4 * math.cos(2 * math.pi * 6 * 1), -- t = 1
-    },
-
     oscillators = {
       osc = nil,
       --[[
