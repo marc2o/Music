@@ -8,7 +8,7 @@ Music is created using MML, a simple [Music Macro Language](https://en.wikipedia
 
 The oscillator code is based on the [Denver Synthesizer Library](https://love2d.org/forums/viewtopic.php?t=79499) and the MML parser is a changed and extended version of the one used in [love-mml](https://github.com/GoonHouse/love-mml).
 
-Songs can be saved as AIFF. I have written the save routine from a scratch. Just press *s* during playback to toggle saving on exit. The composer and title info, if specified in the mml, will be written to the AIFF as well.
+Songs can be saved as AIFF. I have written the save routine from scratch. Just press *s* during playback to toggle saving on exit. The composer and title info, if specified in the mml, will be written to the AIFF as well.
 
 The MML instrucions set is not complete, yet – and not really standard in some aspects.
 
