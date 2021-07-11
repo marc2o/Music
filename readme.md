@@ -60,8 +60,6 @@ Ties two of the same of different notes together, e. g. two quarter notes tied t
 
 **Volume envelope: `@v<num> = { <attack> <decay> <sustain> <release> }`**
 
-_At the moment only defines the default envelope env1._
-
 **`<num>`** (1 to 100)
 
 **`<attack>`** (0 to 100) The time taken for initial run-up of level from nil to peak, beginning when the key is pressed.
