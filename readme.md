@@ -50,6 +50,15 @@ Default octave is 4.
 
 **`<num>`** (value between 0 and 100)
 
+**Set voice: Capital letters `A..Z`**
+
+A capital letter at the beginning of a new line assigns all following commands to a certain voice. The following example plays the notes at the same time on two voices:
+
+```mml
+A cdefg
+B cdefg
+```
+
 **Set waveform: `@<num>`**
 
 **`<num>`** (1 = SIN, 2 = SAW, 3 = SQR, 4 = TRI, 5 = noise)
