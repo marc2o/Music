@@ -50,7 +50,7 @@ Default octave is 4.
 
 **`<num>`** (value between 0 and 100)
 
-**Set voice: Capital letters `A..Z`**
+**`<uppercaseChar>`** (A to Z)
 
 A capital letter at the beginning of a new line assigns all following commands to a certain voice. The following example plays the notes at the same time on two voices:
 

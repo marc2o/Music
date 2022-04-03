@@ -1,3 +1,15 @@
+--[[
+  aiff file writer module for Lua/LÖVE
+  written by Marc Oliver Orth
+                                    ___
+       ______    ___    ___   ___  /    \ ___
+    _/       \_/    \_/ _  \_/   \_--   /-   \
+   /   /  /  /   /  /   /__/  /__/   __/   / /
+  /___/__/__/\__/\_/___/   \____/      \____/
+  (c) 2021 marc2o               \______/
+  https://marc2o.github.io
+  ]]
+
 -- WORK IN PROGRESS
 function math.clamp(low, n, high) return math.min(math.max(n, low), high) end
 

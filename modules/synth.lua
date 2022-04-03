@@ -1,9 +1,15 @@
+--[[
+  synthesizer and sequencer module for Lua/LÖVE
+  written by Marc Oliver Orth
+                                    ___
+       ______    ___    ___   ___  /    \ ___
+    _/       \_/    \_/ _  \_/   \_--   /-   \
+   /   /  /  /   /  /   /__/  /__/   __/   / /
+  /___/__/__/\__/\_/___/   \____/      \____/
+  (c) 2021 marc2o               \______/
+  https://marc2o.github.io
+  ]]
 synth = {
-    --[[
-      synthesizer and sequencer module for Lua/LÖVE
-      written by Marc Oliver Orth
-      © 2021
-    ]]
     sampleRate = 11025, --44100 = HQ
     bits = 8,
     channels = 1,
