@@ -175,7 +175,8 @@ function Mode.playing.update(dt)
   --time = string.format("%.2f", love.timer.getTime() - startTime)
 
   if not synth.isPlaying() then
-    Mode.set("finished")
+    synth.play()
+    --Mode.set("finished")
   end
 end
 
