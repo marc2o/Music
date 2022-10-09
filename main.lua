@@ -4,267 +4,267 @@
     _/       \_/    \_/ _  \_/   \_--   /-   \
    /   /  /  /   /  /   /__/  /__/   __/   / /
   /___/__/__/\__/\_/___/   \____/      \____/
-  (c) 2021 marc2o               \______/
+  (c) 2020 – 2022 marc2o        \______/
   https://marc2o.github.io
 
 --]]
 
-function __ERROR(msg)
-  local success = love.window.showMessageBox( "ERROR", msg, "info", true )
-end
+VERSION = "0.2.0"
 
-require("modules.synth")
-require("modules.aiff")
+require("Modules.NamedColorPalette")
+require("Modules.Music")
+require("Modules.WriteAiff")
 
-prettyTime = ""
-time = 0
-startTime = 0
-pauseTime = 0
-saveOnExit = false
-
-lines = {
-  width = love.graphics.getWidth(),
-  height = love.graphics.getHeight(),
-  number = 16,
-  delay = 60,
-  timer = 60,
-  limit = 0,
-  speed = 240,
-  counter = 240,
-  side = 1,
-  sides = { "top", "right", "bottom", "left" },
-  getSide = function (n)
-    if n > #lines.sides then n = #lines.sides - n end
-    if n < 1 then n = #lines.sides + n end
-    return lines.sides[n]
-  end,
-  draw = function (side, mode)
-    side = lines.getSide(side)
-    for i = 1, lines.number do
-      if mode == "draw" then
-        if i <= lines.limit then
-          love.graphics.setColor(0.8, 0.8, 0.8)
-        else
-          love.graphics.setColor(0.1, 0.1, 0.1)
-        end
-      else
-        if i <= lines.limit then
-          love.graphics.setColor(0.2, 0.2, 0.2)
-        else
-          love.graphics.setColor(0.6, 0.6, 0.6)
-        end
-      end
-      local x1, y1, x2, y2
-      if side == "top" then
-        x1 = 1 + (i - 1) * lines.width / lines.number
-        y1 = 1
-        x2 = lines.width
-        y2 = 1 + (i - 1) * lines.height / lines.number
-      elseif side == "right" then
-        x1 = lines.width
-        y1 = 1 + (i - 1) * lines.height / lines.number
-        x2 = lines.width - (i - 1) * lines.width / lines.number
-        y2 = lines.height
-      elseif side == "bottom" then
-        x1 = lines.width - (i - 1) * lines.width / lines.number
-        y1 = lines.height
-        x2 = 1
-        y2 = lines.height - (i - 1) * lines.height / lines.number
-      elseif side == "left" then
-        x1 = 1
-        y1 = lines.height - (i - 1) * lines.height / lines.number
-        x2 = 1 + (i - 1) * lines.width / lines.number
-        y2 = 1
-      end
-      love.graphics.line(x1, y1, x2, y2)
-      if mode == "draw" then lines.timer = lines.timer - 1 end
-      if lines.timer < 1 then
-        lines.timer = lines.delay
-        if lines.limit < lines.number then lines.limit = lines.limit + 1 end
-      end
-    end
-  end
+local visualizer = ""
+local font = nil
+local t_ui = {
+  keycode_esc = {
+    color = "text_empty",
+    text = "[Esc] Quit  [Tab] Play/Pause  [F1] Export AIFF",
+    x = 16,
+    y = 400 - 40
+  },
+  song_title = {
+    color = "text_title",
+    text = "SONG INFO",
+    x = 16,
+    y = 16
+  },
+  title_label = {
+    color = "text_info",
+    text = "title:",
+    x = 16,
+    y = 40
+  },
+  title_text = {
+    color = "text_default",
+    text = "Untitled",
+    x = 144,
+    y = 40
+  },
+  composer_label = {
+    color = "text_info",
+    text = "composer:",
+    x = 16,
+    y = 64
+  },
+  composer_text = {
+    color = "text_default",
+    text = "John Doe",
+    x = 144,
+    y = 64
+  },
+  programmer_label = {
+    color = "text_info",
+    text = "programmer:",
+    x = 16,
+    y = 88
+  },
+  programmer_text = {
+    color = "text_default",
+    text = "John Doe",
+    x = 144,
+    y = 88
+  },
+  copyright_label = {
+    color = "text_info",
+    text = "copyright:",
+    x = 16,
+    y = 112
+  },
+  copyright_text = {
+    color = "text_default",
+    text = "John Doe",
+    x = 144,
+    y = 112
+  },
+  voices_label = {
+    color = "text_info",
+    text = "voices:",
+    x = 16,
+    y = 136
+  },
+  voice_A_text = {
+    color = "text_empty",
+    text = "A",
+    x = 144,
+    y = 136
+  },
+  voice_B_text = {
+    color = "text_empty",
+    text = "B",
+    x = 160,
+    y = 136
+  },
+  voice_C_text = {
+    color = "text_empty",
+    text = "C",
+    x = 176,
+    y = 136
+  },
+  voice_D_text = {
+    color = "text_empty",
+    text = "D",
+    x = 192,
+    y = 136
+  },
+  voice_E_text = {
+    color = "text_empty",
+    text = "E",
+    x = 208,
+    y = 136
+  },
 }
 
-function drawLines()
-  lines.draw(lines.side - 1, "erase")
-  lines.draw(lines.side, "draw")
-
-  lines.counter = lines.counter - 1
-  if lines.counter < 1 then
-    lines.counter = lines.speed
-    lines.limit = 0
-    lines.side = lines.side + 1
-    if lines.side > #lines.sides then
-      lines.side = 1
-    end
-  end
-
-  if timeElapsed <= 0 then
-    currentSample = math.floor(time * synth.sampleRate)
-    timeElapsed = 5
-  end
-  timeElapsed = timeElapsed - 1
-  for i = 0, love.graphics.getWidth(), 4 do
-    local sample = 0
-    if currentSample + i + 20 < totalSamples then
-      for s = i, i + 20 do
-        sample = sample + math.abs(synth.audioData:getSample(currentSample + s))
-      end
-      sample = sample / 20
-    end
-    love.graphics.setColor(0.8, 0.8, 0.8, 0.15)
-    love.graphics.rectangle(
-      "fill",
-      i,
-      love.graphics.getHeight() - love.graphics.getHeight() / 3,
-      2,
-      -sample * love.graphics.getHeight() / 2
-    )
-    love.graphics.setColor(0.8, 0.8, 0.8, 0.05)
-    love.graphics.rectangle(
-      "fill",
-      i,
-      love.graphics.getHeight() - love.graphics.getHeight() / 3 + 2,
-      2,
-      (sample * love.graphics.getHeight() / 3) + 2
-    )
-  end
-end
-
-totalSamples = 0
-currentSample = 0
-timeElapsed = 0
-
-Mode = {
-  playing = {},
-  waiting = {},
-  loading = {},
-  finished = {}
-}
-function Mode.set(mode)
-  local mode = mode or "loading"
-  u, d = Mode[mode].update, Mode[mode].draw
-end
-
-function Mode.waiting.update(dt)
-end
-
-function Mode.waiting.draw()
-  love.graphics.setColor(0.8, 0.8, 0.8)
-
-  love.graphics.print(
-    "\ndrag-n-drop mml file to open..." .. "\n\npress [ESC] to quit",
-    love.graphics.getWidth() / 4,
-    love.graphics.getHeight() / 2 - 12
-  )
-  drawLines()
-end
-
-function Mode.playing.update(dt)
-  time = love.timer.getTime() - startTime - pauseTime
-  local minutes = math.floor(time / 60)
-  local seconds = time - minutes * 60
-  if seconds < 10 then
-    seconds = "0" .. string.format("%.2f", seconds)
-  else
-    seconds = string.format("%.2f", seconds)
-  end
-  if minutes < 10 then minutes = "0" .. minutes end
-  prettyTime =  minutes .. ":" .. seconds
-  --time = string.format("%.2f", love.timer.getTime() - startTime)
-
-  if not synth.isPlaying() then
-    synth.play()
-    --Mode.set("finished")
-  end
-end
-
-function Mode.playing.draw()
-  love.graphics.setColor(0.8, 0.8, 0.8)
-
-  love.graphics.print(
-    "\nTITLE: " .. synth.title .. "\nplaying…\n" .. prettyTime .. "\n\npress [ESC] to quit, [space] for pause, [x] to stop" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press [s] to toggle)",
-    love.graphics.getWidth() / 4,
-    love.graphics.getHeight() / 2 - 12
-  )
-
-  drawLines()
-end
-
-function Mode.finished.update(dt)
-  pauseTime = love.timer.getTime() - startTime - time
-  if synth.isPlaying() then
-    Mode.set("playing")
-  end
-end
-
-function Mode.finished.draw()
-  love.graphics.setColor(0.8, 0.8, 0.8)
-
-  love.graphics.print(
-    "paused or stopped/finished.\n" .. prettyTime .. "\n\npress [ESC] to quit, [space] for pause, [x] to stop" .. "\n\nSaving on exit: " .. tostring(saveOnExit) .. " (press [s] to toggle)",
-    love.graphics.getWidth() / 4,
-    love.graphics.getHeight() / 2 - 12
-  )
-end
+----------------------------------
+-- LÖVE BASE FUNCTIONS
+----------------------------------
 
 function love.update(dt)
-  if dt < 1/50 then
-    love.timer.sleep(1/50 - dt)
+  if dt < 1/60 then
+    love.timer.sleep(1/60 - dt)
   end
+  
+  NEXT_t = NEXT_t + MIN_dt
 
-  if love.keyboard.isDown("escape") then
-    love.event.quit()
-  end
+  ---
 
-  u(dt)
-end
-
-function love.keyreleased(key)
-  if key == "s" then
-    saveOnExit = not saveOnExit
-  end
-  if key == "space" then
-    synth.pause()
-  end
-  if key == "x" then
-    synth.stop()
+  if music:is_playing() then
+    local value = music:get_current_sample()
+    visualizer = visualizer .. string.char(math.floor(math.abs(value * 100)))
+    if visualizer:len() > 80 then
+      visualizer = visualizer:sub(2, 81)
+    end
   end
 end
 
 function love.draw()
-  love.graphics.clear(0.1, 0.1, 0.1)
-  
-  d()
+  love.graphics.clear(colors:get_color("background"))
+
+  if music:is_playing() then
+    for i = 0, visualizer:len() - 1 do
+      local height = visualizer:sub(i, i):byte()
+      local width = love.graphics.getWidth() / visualizer:len()
+      if height == nil then height = 0 end
+      if i == math.floor(visualizer:len() / 2) then
+        love.graphics.setColor(colors:get_color("cursor"))
+      elseif i == math.floor(visualizer:len() / 2) - 1 or i == math.floor(visualizer:len() / 2) + 1 then
+        love.graphics.setColor(colors:get_color("text_info"))
+      else
+        love.graphics.setColor(1, 1, 1, 0.1)
+      end
+      love.graphics.rectangle("fill", i * width, 250 - height, 8, height * 2)
+    end
+  end
+
+  for _, element in pairs(t_ui) do
+    love.graphics.setColor(colors:get_color(element.color))
+    love.graphics.print(element.text, element.x, element.y)
+  end
+
+  ---
+
+  local current_time = love.timer.getTime()
+  if NEXT_t <= current_time then
+    NEXT_t = current_time
+    return
+  end
+  love.timer.sleep(NEXT_t - current_time)
+end
+
+function love.load()
+  font = love.graphics.newFont("Assets/FiraCode-Medium.ttf", 16)
+  love.graphics.setFont(font)
+  -- see Assets/FiraCode-LICENSE.txt for more info
+  -- https://github.com/tonsky/FiraCode
+  love.window.setMode(
+    800,
+    400,
+    {
+      fullscreen = false,
+      vsync = 1,
+      resizable = false,
+      centered = true
+    }
+  )
+  love.window.setTitle("Music v" .. VERSION)
+  colors = NamedColorPalette:new()
+  colors:create(require("Assets.colors")) 
+
+  ---
+
+  MIN_dt = 1/60
+  NEXT_t = love.timer.getTime()
 end
 
 function love.quit()
-  if saveOnExit then
-    local content = ""
-    local file = aiff.createFile(synth.title .. " by " .. synth.composer)
-    aiff.writeFile(file, {
-      soundData = synth.audioData,
-      title = synth.title,
-      composer = synth.composer
-    })
-    aiff.closeFile(file)
-  end
-end
-
-local __musicFilePath = ""
-function love.load()
-  Mode.set("waiting")
 end
 
 function love.filedropped(file)
-  synth.stop()
+  if file then
+    file:open("r")
+    --file_content = file:read()
+    local content = {}
 
-  synth.load(file)
-  synth.init()
-  synth.play()
+    for line in file:lines() do
+      if string.len(line) > 0 then table.insert(content, line) end
+    end
+    
+    file:close()
 
-  Mode.set("playing")
-  startTime = love.timer.getTime()
-  totalSamples = synth.audioData:getSampleCount()
+    music:init()
+
+    local success = music:parse_mml(content)
+    if success then
+      t_ui.title_text.text = music.meta.title
+      t_ui.composer_text.text = music.meta.composer
+      t_ui.programmer_text.text = music.meta.programmer
+      t_ui.copyright_text.text = music.meta.copyright
+
+      local used_voices = music:get_used_voices()
+      for voice, used in pairs(used_voices) do
+        if used then
+          t_ui["voice_" .. voice .. "_text"].color = "text_value"
+        else
+          t_ui["voice_" .. voice .. "_text"].color = "text_empty"
+        end
+      end
+    end
+  else
+    local error = love.window.showMessageBox("Error", "Unable to open file", "info", true)
+  end
+end
+
+function love.keypressed(key, scancode, isrepeat)
+  if key == "escape" then
+    love.event.quit()
+    
+  elseif key == "tab" then
+    music:pause()
+    
+  elseif key == "f1" and music.audio.sound_data then
+    -- export AIFF
+    local content = ""
+    local file = aiff:createFile(music.meta.title .. " by " .. music.meta.composer)
+    aiff:writeFile(file, {
+      soundData = music.audio.sound_data,
+      title = music.meta.title,
+      composer = music.meta.composer
+    })
+    aiff:closeFile(file)
+
+    local path = {
+      macOS = "~/Library/Application Support/LOVE/Music/",
+      Windows = "%appdata%\\LOVE\\Music\\",
+      Linux = "~/.local/share/love/"
+    }
+    local os = love.system.getOS()
+    if os == "OS X" then os = "macOS" end
+    success = love.window.showMessageBox("AIFF-Export", "Saved to " .. path[os], "info", true)
+    
+  elseif key == "return" then
+    -- enter
+  else
+    -- ...
+  end
 end

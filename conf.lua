@@ -1,14 +1,14 @@
 function love.conf(t)
   t.identity = nil                    -- The name of the save directory (string)
-  t.version = "11.3"                  -- The LÖVE version this game was made for (string)
+  t.version = "11.4"                  -- The LÖVE version this game was made for (string)
   t.console = false                   -- Attach a console (boolean, Windows only)
   t.accelerometerjoystick = true      -- Enable the accelerometer on iOS and Android by exposing it as a Joystick (boolean)
   t.gammacorrect = false              -- Enable gamma-correct rendering, when supported by the system (boolean)
 
-  t.window.title = "Music"         -- The window title (string)
+  t.window.title = "App1"             -- The window title (string)
   t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
-  t.window.width = 800                -- The window width (number) 768
-  t.window.height = 480               -- The window height (number) 432
+  t.window.width = 768                -- The window width (number) 768
+  t.window.height = 432               -- The window height (number) 432
   t.window.borderless = false         -- Remove all border visuals from the window (boolean)
   t.window.resizable = false          -- Let the window be user-resizable (boolean)
   t.window.minwidth = 1               -- Minimum window width if the window is resizable (number)
