@@ -2,7 +2,7 @@
 
 # Read me
 
-This project, aptly named »Music«, is a synthesizer and MML parser written from scratch in Lua/[LÖVE](https://love2d.org/). It is a complete rewrite of my first attempt and this time around I have completely written the synthesizer and parser code myself (and have learned a lot in doing so).
+This project, aptly named »Music«, is a synthesizer and MML parser (with AIFF exporter) written from scratch in Lua/[LÖVE](https://love2d.org/). It is a complete rewrite of my first attempt and this time around I have completely written the synthesizer and parser code myself (and have learned a lot in doing so).
 
 The synthesizer capabilities are loosely based on the NES. 
 
