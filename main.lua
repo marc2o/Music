@@ -151,7 +151,7 @@ function love.draw()
       elseif i == math.floor(visualizer:len() / 2) - 1 or i == math.floor(visualizer:len() / 2) + 1 then
         love.graphics.setColor(colors:get_color("text_info"))
       else
-        love.graphics.setColor(1, 1, 1, 0.1)
+        love.graphics.setColor(1, 1, 1, 0.125)
       end
       love.graphics.rectangle("fill", i * width, 250 - height, 8, height * 2)
     end
