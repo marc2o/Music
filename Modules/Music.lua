@@ -411,16 +411,19 @@ function music:render_audio()
       end
 
         local modifiers = self.amplitude * message.volume * envelope
-        if modifiers > 1.0 then modifiers = 1.0 end -- ???
+        if modifiers > 1.0 then modifiers = 1.0 end  
 
-        sample = math.tanh(self.audio.sound_data:getSample(song_sample_count) + sample * modifiers / song_voices)
-        self.audio.sound_data:setSample(song_sample_count, sample)
+        --if previous_sound.sample then sample = sample + previous_sound.sample end
+        
+        local combined_sample = math.tanh(self.audio.sound_data:getSample(song_sample_count) + sample * modifiers / song_voices)
+        self.audio.sound_data:setSample(song_sample_count, combined_sample)
         song_sample_count = song_sample_count + 1
       end
 
       previous_sound = {
         message = message,
-        waveform = waveform
+        waveform = waveform,
+        sample = sample
       }
     end
   end

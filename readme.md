@@ -133,6 +133,7 @@ The following features are not yet implemented:
 - Loops (`[..]<n>n`)
 - Arpeggio macro (`@arp<n>`)
 - Vibrato (pitch modulation `@vib<n>`)
+- Filters (at least lowpass)
 - MIDI export
 
 
