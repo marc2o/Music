@@ -224,7 +224,7 @@ end
 function music:set_volume(volume, track)
   local track = track or self:get_track()
   if track == "C" then
-    volume = tostring(volume / volume) == tostring(0/0) and 0 or 1.0
+    volume = tostring(volume / volume) == tostring(0/0) and 0 or 0.9
   else
     volume = volume / 0x7F
   end
@@ -233,7 +233,7 @@ end
 function music:get_volume(track) --> number 0..127
   local volume = self.tracks.info[track].volume or 80 / 0x7F
   if track == "C" then
-    volume = tostring(volume / volume) == tostring(0/0) and 0 or 1.0
+    volume = tostring(volume / volume) == tostring(0/0) and 0 or 0.9
   end
   return volume
 end
@@ -326,7 +326,9 @@ function music:render_audio()
     if song_duration < self:get_track_duration(track) then
       song_duration = self:get_track_duration(track) + 1
     end
-    if self:get_track_duration(track) > 0 then song_voices = song_voices + 1 end
+    if self:get_track_duration(track) > 0 then
+      song_voices = song_voices + 1
+    end
   end
 
   local song_samples = song_duration * self:get_sample_rate()
@@ -408,22 +410,26 @@ function music:render_audio()
           else
             sample = 0
           end
-      end
+        end
 
         local modifiers = self.amplitude * message.volume * envelope
         if modifiers > 1.0 then modifiers = 1.0 end  
 
-        --if previous_sound.sample then sample = sample + previous_sound.sample end
+        -- filter...
+        --if previous_sound.sample then
+        --  sample = sample + previous_sound.sample
+        --end
         
         local combined_sample = math.tanh(self.audio.sound_data:getSample(song_sample_count) + sample * modifiers / song_voices)
         self.audio.sound_data:setSample(song_sample_count, combined_sample)
         song_sample_count = song_sample_count + 1
+
+        previous_sound.sample = sample
       end
 
       previous_sound = {
         message = message,
-        waveform = waveform,
-        sample = sample
+        waveform = waveform
       }
     end
   end

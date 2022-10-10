@@ -143,17 +143,18 @@ function love.draw()
 
   if music:is_playing() then
     for i = 0, visualizer:len() - 1 do
-      local height = visualizer:sub(i, i):byte()
-      local width = love.graphics.getWidth() / visualizer:len()
+
+      local height = visualizer:sub(i + 1, i + 1):byte()
+      
+      local width = (love.graphics.getWidth() - 32) / visualizer:len()
       if height == nil then height = 0 end
-      if i == math.floor(visualizer:len() / 2) then
+      
+      if i == visualizer:len() - 1 then
         love.graphics.setColor(colors:get_color("cursor"))
-      elseif i == math.floor(visualizer:len() / 2) - 1 or i == math.floor(visualizer:len() / 2) + 1 then
-        love.graphics.setColor(colors:get_color("text_info"))
       else
-        love.graphics.setColor(1, 1, 1, 0.125)
+        love.graphics.setColor(1, 1, 1, 0.1)
       end
-      love.graphics.rectangle("fill", i * width, 250 - height, 8, height * 2)
+      love.graphics.rectangle("fill", 16 + i * width, 250 - height, 5, height * 2)
     end
   end
 
