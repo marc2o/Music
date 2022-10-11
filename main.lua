@@ -11,6 +11,17 @@
 
 VERSION = "0.2.0"
 
+--[[
+  0.2.2 (...)
+  - audio volume of channel C (triangle) fine-tuned
+  - ...
+
+  0.2.0 (09.10.2022)
+  - complete rewrite of synthesizer and parser
+  - refactored aiff exporter
+  - new app screen
+]]
+
 require("Modules.NamedColorPalette")
 require("Modules.Music")
 require("Modules.WriteAiff")
@@ -142,14 +153,14 @@ function love.draw()
   love.graphics.clear(colors:get_color("background"))
 
   if music:is_playing() then
-    for i = 0, visualizer:len() - 1 do
+    for i = visualizer:len() - 1, 0, -1 do
 
       local height = visualizer:sub(i + 1, i + 1):byte()
       
       local width = (love.graphics.getWidth() - 32) / visualizer:len()
       if height == nil then height = 0 end
       
-      if i == visualizer:len() - 1 then
+      if i == 0 then
         love.graphics.setColor(colors:get_color("cursor"))
       else
         love.graphics.setColor(1, 1, 1, 0.1)

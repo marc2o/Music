@@ -91,7 +91,8 @@ function music:NOISE(sample_rate, frequency) --> function()
   local npoints = sample_rate / frequency
 
   return function()
-    return math.random(-1.0, 1.0)
+    i = i % npoints + 1
+    return i < npoints - 1 and math.random(-1.0, 1.0)
   end
 end
 
