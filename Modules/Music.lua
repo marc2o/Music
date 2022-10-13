@@ -10,6 +10,7 @@
 --]]
 
 music = {
+  is_ready = false,
   tracks = {
     current_track = "A",
     info = {
@@ -114,24 +115,32 @@ function music:init()
   self.tracks.data.E = {}
   self.tracks.info.E = {}
 end
+function music:is_ready() --> bool
+  if self.audio.source then
+    return true
+  else
+    return false
+  end
+end
 function music:play()
-  if self.audio.source then love.audio.play(self.audio.source) end
+  if self:is_ready() then
+    love.audio.play(self.audio.source)
+    self.audio.source:setLooping(true)
+  end
 end
 function music:stop()
   love.audio.stop()
 end
 function music:is_playing() --> bool
-  if self.audio.source then
+  if self:is_ready() then
     return self.audio.source:isPlaying()
   else
     return false
   end
 end
 function music:pause()
-  if self:is_playing() and self.audio.source then
+  if self:is_ready() and self:is_playing() then
     love.audio.pause(self.audio.source)
-  elseif not self:is_playing() and self.audio.source then
-    love.audio.play(self.audio.source)
   end
 end
 function music:get_current_sample() --> value

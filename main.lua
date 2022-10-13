@@ -9,12 +9,12 @@
 
 --]]
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 --[[
-  0.2.2 (...)
+  0.2.1 (...)
   - audio volume of channel C (triangle) fine-tuned
-  - ...
+  - some changes to the player code
 
   0.2.0 (09.10.2022)
   - complete rewrite of synthesizer and parser
@@ -152,19 +152,21 @@ end
 function love.draw()
   love.graphics.clear(colors:get_color("background"))
 
-  if music:is_playing() then
+  if 1 == 1 then
     for i = visualizer:len() - 1, 0, -1 do
-
       local height = visualizer:sub(i + 1, i + 1):byte()
-      
       local width = (love.graphics.getWidth() - 32) / visualizer:len()
-      if height == nil then height = 0 end
+      
+      if height == nil or height == 0 then
+        height = 2
+      end
       
       if i == 0 then
         love.graphics.setColor(colors:get_color("cursor"))
       else
         love.graphics.setColor(1, 1, 1, 0.1)
       end
+      
       love.graphics.rectangle("fill", 16 + i * width, 250 - height, 5, height * 2)
     end
   end
@@ -252,9 +254,13 @@ function love.keypressed(key, scancode, isrepeat)
     love.event.quit()
     
   elseif key == "tab" then
-    music:pause()
+    if music:is_playing() then
+      music:pause()
+    else
+      music:play()
+    end
     
-  elseif key == "f1" and music.audio.sound_data then
+  elseif key == "f1" and music:is_ready() then
     -- export AIFF
     local content = ""
     local file = aiff:createFile(music.meta.title .. " by " .. music.meta.composer)
