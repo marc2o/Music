@@ -7,7 +7,7 @@
   (c) 2020 – 2022 marc2o        \______/
   https://marc2o.github.io
 
---]]
+]]
 
 -- WORK IN PROGRESS
 function math.clamp(low, n, high)

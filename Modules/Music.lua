@@ -7,7 +7,7 @@
   (c) 2020 – 2022 marc2o        \______/
   https://marc2o.github.io
 
---]]
+]]
 
 music = {
   is_ready = false,

@@ -7,7 +7,7 @@
   (c) 2020 – 2022 marc2o        \______/
   https://marc2o.github.io
 
---]]
+]]
 
 VERSION = "0.2.1"
 
