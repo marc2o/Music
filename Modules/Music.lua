@@ -91,9 +91,10 @@ end
 function music:NOISE(sample_rate, frequency) --> function()
   local npoints = sample_rate / frequency
 
-  return function()
-    i = i % npoints + 1
-    return i < npoints - 1 and math.random(-1.0, 1.0)
+  return function(i)
+    --i = i % npoints + 1
+    --return i < npoints - 1 and math.random(-1.0, 1.0)
+    return math.random(-1.0, 1.0)
   end
 end
 
@@ -331,6 +332,7 @@ function music:render_audio()
   local song_voices = 0
   local song_sample_count = 0
   local previous_sound = {}
+  local sample = 0
   
   for track, _ in pairs(self.tracks.info) do
     if song_duration < self:get_track_duration(track) then

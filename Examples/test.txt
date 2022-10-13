@@ -18,7 +18,7 @@ f. e. d
 e c @02 r d
 e c @01 < h > c
 
-C q5 l8 o2 v100
+C q5 l8 o2
 c. > c. < c   c. > c. < c 
 c. > c. < c   c. > c. < c
 c. > c. < c   c. > c. < c
@@ -29,7 +29,7 @@ r1
 c c c c c c c c
 c c c c c c c c
 
-E o1 l8 v100
+E o1 l8 v127
 r1 r1
 @env3 v127 c r @env1 v80 c @env3 v127 c
 @env3 v127 c r @env1 v80 c @env3 v127 c
