@@ -9,10 +9,13 @@
 
 ]]
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 
 --[[
-  0.2.1 (...)
+  0.2.2
+  - corrected song length so that it now loops cleanly
+
+  0.2.1
   - audio volume of channel C (triangle) fine-tuned
   - some changes to the player code
 
@@ -39,7 +42,7 @@ local t_ui = {
     color = "text_title",
     text = "SONG INFO",
     x = 16,
-    y = 16
+    y = 160
   },
   title_label = {
     color = "text_info",

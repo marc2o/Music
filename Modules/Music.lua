@@ -336,7 +336,7 @@ function music:render_audio()
   
   for track, _ in pairs(self.tracks.info) do
     if song_duration < self:get_track_duration(track) then
-      song_duration = self:get_track_duration(track) + 1
+      song_duration = self:get_track_duration(track)
     end
     if self:get_track_duration(track) > 0 then
       song_voices = song_voices + 1
