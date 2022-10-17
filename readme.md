@@ -84,6 +84,14 @@ For the two pulse wave channels `A` and `B` the duty cycle can be set using the 
 - `03` 75 % same as 25 % but phase-inverted
 
 
+### Pitch Modulation
+
+You can create vibratos using `@vib` macros by defining the LFO frequency (`0 .. n`) and the intensity (`0 .. 127`) of the vibrato.
+
+	@vib0 = { 32 48 }
+	
+Call the macro to turn on your vibrato settings for the following notes. Call `@viboff` to turn it off again.
+
 ### Programming Notes
 
 For the pitches of notes the usual letters are used. For `h` also `b` can be used.
@@ -129,12 +137,12 @@ Comments can be used to make annotations or write lyrics. A comment is everythin
 
 The following features are not yet implemented:
 
-- Ties (`&`)
-- Loops (`[..]<n>n`)
-- Arpeggio macro (`@arp<n>`)
-- Vibrato (pitch modulation `@vib<n>`)
-- Filters (at least lowpass)
-- MIDI export
+- [ ] Ties (`&`)
+- [ ] Loops (`[..]<n>n`)
+- [ ] Arpeggio macro (`@arp<n> .. @arpoff`)
+- [x] ~~Vibrato (pitch modulation `@vib<n> .. @viboff`)~~
+- [ ] Filters (at least lowpass)
+- [ ] MIDI export
 
 
 ## References

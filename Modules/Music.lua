@@ -49,40 +49,72 @@ music = {
       r = 48 / 60 * 11025   
     }
   },
+  vibratos = {
+    default = {
+      frq = 30,
+      int = 32 / 0x7f * 8 -- intensity 0 .. 127 -> 0.0 .. 8.0
+    }
+  },
   audio = {
     source = nil,
     sound_data = nil
   },
   mml = {}
 }
+
+function music:LFO(frequency, intensity) --> function()
+  local lfo_rate = self.sample_rate / frequency
+  local lfo_intensity = intensity or 1.0
   
+  return function(i)
+    return math.sin(i / lfo_rate) * lfo_intensity
+  end
+end
+
+
 -- pulse wave
-function music:PULSE(sample_rate, frequency, duty_cycle) --> function()
+function music:PULSE(sample_rate, frequency, duty_cycle, vibrato) --> function()
   -- number of points in dataset
   local npoints = sample_rate / frequency
   local duty_cycle = duty_cycle or 0.5
-
+  
+  local LFO = function(i) return 0 end
+  if vibrato ~= "none" then
+    LFO = self:LFO(self.vibratos[vibrato].frq, self.vibratos[vibrato].int)
+  end
+  
   return function(i)
-    i = i % npoints + 1
+    --i = i % npoints + 1
+    i = i % npoints + 1 + LFO(i)
     return i < (npoints * duty_cycle) and -1 or 1
   end
 end
 
-function music:TRIANGLE(sample_rate, frequency) --> function()
+function music:TRIANGLE(sample_rate, frequency, vibrato) --> function()
   local npoints = sample_rate / frequency
-  
+
+  local LFO = function(i) return 0 end
+  if vibrato ~= "none" then
+    LFO = self:LFO(self.vibratos[vibrato].frq, self.vibratos[vibrato].int)
+  end
+
   return function(i)
-    i = i % npoints + 1
+    i = i % npoints + 1 + LFO(i)
     local step = 4 / npoints
     return i < (npoints / 2) and step * (i - 1) - 1 or step * ((i - 1) - npoints / 2)
   end
 end
 
-function music:SAWTOOTH(sample_rate, frequency) --> function()
+function music:SAWTOOTH(sample_rate, frequency, vibrato) --> function()
   local npoints = sample_rate / frequency
 
+  local LFO = function(i) return 0 end
+  if vibrato ~= "none" then
+    LFO = self:LFO(self.vibratos[vibrato].frq, self.vibratos[vibrato].int)
+  end
+
   return function(i)
-    i = i % npoints + 1
+    i = i % npoints + 1 + LFO(i)
     local step = 4 / npoints
     return i < npoints - 1 and step * (i - 1) - 1 or -1
   end
@@ -218,6 +250,26 @@ function music:get_envelope(track) --> string
   return envelope
 end
 
+function music:define_vibrato(name, frequency, intensity)
+  self.vibratos[name] = {
+    frq = frequency,
+    int = intensity / 0x7f * 8,
+  }
+end
+function music:set_vibrato(name)
+  local track = track or self:get_track()
+  self.tracks.info[track].vibrato = name
+end
+function music:get_vibrato(track) --> string
+  local vibrato = self.tracks.info[track].vibrato or "none"
+  return vibrato
+end
+function music:vibrato_off(track)
+  local track = track or self:get_track()
+  self.tracks.info[track].vibrato = "none"
+end
+
+
 function music:set_track(letter)
   self.tracks.current_track = letter
 end
@@ -316,6 +368,7 @@ function music:note(note, accident, value, dot)
     volume = self:get_volume(track),
     dcycle = self.tracks.info[track].dcycle,
     envelope = self:get_envelope(track),
+    vibrato = self:get_vibrato(track),
     quantization = self:get_quantization(track),
     track = track
   })
@@ -380,13 +433,13 @@ function music:render_audio()
         frequency = self.base_frequency * 2 ^ (pitch / 12)
         
       end
-
+      
       if message.track:match("[AB]") then
-        waveform = self:PULSE(self.sample_rate, frequency, message.dcycle)
+        waveform = self:PULSE(self.sample_rate, frequency, message.dcycle, message.vibrato)
       elseif message.track == "C" then
-        waveform = self:TRIANGLE(self.sample_rate, frequency)
+        waveform = self:TRIANGLE(self.sample_rate, frequency, message.vibrato)
       elseif message.track == "D" then
-        waveform = self:SAWTOOTH(self.sample_rate, frequency)
+        waveform = self:SAWTOOTH(self.sample_rate, frequency, message.vibrato)
       elseif message.track == "E" then
         waveform = self:NOISE(self.sample_rate, frequency)
       end
@@ -427,11 +480,6 @@ function music:render_audio()
         local modifiers = self.amplitude * message.volume * envelope
         if modifiers > 1.0 then modifiers = 1.0 end  
 
-        -- filter...
-        --if previous_sound.sample then
-        --  sample = sample + previous_sound.sample
-        --end
-        
         local combined_sample = math.tanh(self.audio.sound_data:getSample(song_sample_count) + sample * modifiers / song_voices)
         self.audio.sound_data:setSample(song_sample_count, combined_sample)
         song_sample_count = song_sample_count + 1
@@ -489,6 +537,11 @@ function music:parse_mml(mml) --> bool
               -- envelope macro
               local attack, decay, sustain, release = args:match("(%d+)%D+(%d+)%D+(%d+)%D+(%d+)%D+")
               self:define_envelope(name, attack, decay, sustain, release)
+              
+            elseif name:match("vib%d+") then
+              local frequency, intensity = args:match("(%d+)%D+(%d+)%D+")
+              self:define_vibrato(name, frequency, intensity)
+              
             end
             end_of_line = true
 
@@ -511,10 +564,14 @@ function music:parse_mml(mml) --> bool
             elseif name:match("arp%d+") then
               -- @arp arpeggios
               -- to do
+            elseif name:match("arpoff") then
+              -- to do
 
             elseif name:match("vib%d+") then
               -- @vib vibratos
-              -- to do
+              self:set_vibrato(name)
+            elseif name:match("viboff") then
+              self:vibrato_off()
 
             end
             i = i + name:len() 

@@ -12,6 +12,10 @@
 VERSION = "0.2.2"
 
 --[[
+  0.3.0
+  - basic lfo support implemented
+  - @vib macro implemented
+
   0.2.2
   - corrected song length so that it now loops cleanly
 

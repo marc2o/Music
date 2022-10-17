@@ -7,12 +7,13 @@
 
 @env0 = { 2, 16, 64, 48 }
 @env1 = { 8, 32, 72, 64 }
+@vib0 = { 40 32 }
 
 t120
 
-A @02 o5 l4 @env0 v120
-c d e < e f > c w d < b > c d < g > f2 e2
-c d e < g a > c w d d2. c8 d8 e2 r2
+A @02 o5 l4 @env0 v120 
+c d e < e f > @vib0 c w @viboff d < b > c d < g > @vib0 f2 e2 @viboff
+c d e < g a > @vib0 c w @viboff d @vib0 d2. @viboff c8 d8 @vib0 e2 @viboff r2
 r1
 
 C q7 o2 l2
