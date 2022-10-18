@@ -135,7 +135,7 @@ function music:init()
   self.audio = { source = nil, sound_data = nil }
   self.meta.title = ""
   self.meta.composer = ""
-  self.meta.programer = ""
+  self.meta.programmer = ""
   self.meta.copyright = ""
   self.tracks.data.A = {}
   self.tracks.info.A = {}
@@ -477,9 +477,14 @@ function music:render_audio()
           end
         end
 
+        -- filter
+        local smoothing = 2
+        if not previous_sound.sample then previous_sound.sample = 0 end
+        sample = previous_sound.sample + (sample - previous_sound.sample) / smoothing
+        -- modifications
         local modifiers = self.amplitude * message.volume * envelope
         if modifiers > 1.0 then modifiers = 1.0 end  
-
+        -- mixing
         local combined_sample = math.tanh(self.audio.sound_data:getSample(song_sample_count) + sample * modifiers / song_voices)
         self.audio.sound_data:setSample(song_sample_count, combined_sample)
         song_sample_count = song_sample_count + 1
@@ -509,6 +514,7 @@ function music:parse_mml(mml) --> bool
     local end_of_line = false
 
     local i = 1
+    local loop = { start = 0, stop = 0, times = 0, mml = "" }
 
     repeat
       local cmd = string.match(string.sub(line, i), "^[%a<>&#@/:;%[%]]")
@@ -578,7 +584,7 @@ function music:parse_mml(mml) --> bool
             args = ""
           end
         
-        elseif cmd:match("%u") then
+        elseif cmd:match("[ABCDE]") then
           -- A..E channel name
           self:set_track(cmd)
 
@@ -593,9 +599,19 @@ function music:parse_mml(mml) --> bool
           -- to do
           if cmd == "[" then
             -- [ begin loop
+            loop.start = i + 1
+            
           elseif cmd == "]" then
             -- ]n end loop, repeat n times, default = 2
-            local ntimes =  string.match(string.sub(line, i), ":(%d+)[%D]") or "2"
+            local ntimes =  string.match(string.sub(line, i + 1), "(%d+)[%D]?") or "2"
+            loop.stop = i - 1
+            loop.mml = line:sub(loop.start, loop.stop)
+            local lstr = ""
+            for n = 1, ntimes - 1 do
+              lstr = lstr .. loop.mml
+            end              
+            line = line:sub(1, loop.start - 2) .. lstr .. line:sub(loop.stop + 2 + ntimes:len())
+            i = loop.start - 2
           end
                 
         elseif cmd:match("[abcdefghlopqrtvw]") then

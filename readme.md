@@ -6,7 +6,7 @@ This project, aptly named »Music«, is a synthesizer and MML parser (with AIFF 
 
 The synthesizer capabilities are loosely based on the NES. 
 
-## Usage
+## How to use
 
 Open any an MML file (either `.txt` or `.mml`) per drag-n-drop on the LÖVE app icon or the app window while Music is running.
 
@@ -24,6 +24,9 @@ AIFF and MIDI files are saved at LÖVE’s default location, which is
 
 
 ## Basic Song Setup
+
+You can write your own music files with any text editor you like, e. g. macOS TextEdit. Just make sure to edit in and save as plain text (`.txt`).
+
 
 ### Header Credits
 
@@ -118,7 +121,7 @@ The default octave can be set for a channel and changed any time between the not
 Within phrases the octave can be shifted up and down using the octave shift commands `>` and `<` respectively.
 
 
-### Loops (not yet implemented)
+### Loops
 
 A phrase can be looped n times using square brackets `[` `]<n>`.
 
@@ -138,10 +141,10 @@ Comments can be used to make annotations or write lyrics. A comment is everythin
 The following features are not yet implemented:
 
 - [ ] Ties (`&`)
-- [ ] Loops (`[..]<n>n`)
+- [x] ~~Loops (`[..]<n>n`)~~
 - [ ] Arpeggio macro (`@arp<n> .. @arpoff`)
 - [x] ~~Vibrato (pitch modulation `@vib<n> .. @viboff`)~~
-- [ ] Filters (at least lowpass)
+- [x] ~~Filters (at least lowpass)~~
 - [ ] MIDI export
 
 

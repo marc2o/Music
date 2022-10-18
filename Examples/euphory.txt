@@ -1,0 +1,40 @@
+;---------------------------------------------------------------
+#TITLE			EUPHORY / 町
+#COMPOSER		Manabu Saito
+;---------------------------------------------------------------
+
+@env0 = { 2, 16, 64, 48 }
+@env1 = { 1, 4, 4, 2 }
+
+t120
+
+A @01 o4 l16 @env0
+A a8.ar8fgar>crdrerf8.e8.d8<a4.r8
+A a+8.a+r8gaa+r>crdrfrgf8ed+d8c+c4>cr8.<<
+A a8.ar8fgar>crdrerf8.e8.d8<a4.r8
+A a+8.a+r8gaa+r>drfra8.g8fgf8ef8.f8.e8
+A dd8d8.d4e8f8a8dd8d8.d4e8f8a8
+A d<a+>cd<a+>cd4e8g8<a8a+gaa+gaa+4>c8c+8e8
+A dd8d8.d4e8f8a8dd8d8.d4e8f8a8
+A d<a+>cd8<a+>cde8f8g8r8fdef8defg8a8a+8r8<
+
+B @02 l8 @env0
+B o3f4c4f4f8e8d4<a4>d4<a4>g4d4g4d4c4<g4>c4 o7@2c16r.
+B o3f4c4f4f8e8d4<a4>d4<a4>g4d4g4d4c4e4f4r4
+B d2c+2c2<b2@v01a+8a+16a+16a+8a+16a+16a8a16a16a8a16a16g8g16g16g8g16g16a8a16a16a8>c+16c+16
+B d2c+2c2<b2@v01g8g16g16g8g16g16a8a16a16a8a16a16a+8a+16a+16b8b16b16>c4>c4
+
+C l16 q7 o4
+C rrccrrccrrccrrc+c+rrddrrddrr<aarraa
+C rra+a+rra+a+rra+a+rra+a+rr>eerreec4r4
+C rrccrrccrrccrrc+c+rrddrrddrr<aarraa
+C rra+a+rra+a+rr>ggrrggrreerreef4r4
+C q8a2.&a8.&a32r32a1d2e2f2g2a2.&a8.&a32r32a1d2e2f2g4r4
+
+E o0 @env1 v120
+E l8[rc4c4ccc4c4c4ccc4c4c4ccc4c4cc4rr]2
+E l16
+E crcccrcccrcccrcc crcccrcccrcccrcc
+E crcccrcccrcccrcc crcccrcccrcccccc
+E crcccrcccrcccrcc crcccrcccrcccrcc
+E c4c4c4ccccc4c4c4r4

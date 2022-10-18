@@ -9,9 +9,16 @@
 
 ]]
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 
 --[[
+  0.4.0
+  - loops implemented
+  - bug fixes
+
+  0.3.1
+  - simple lowpass filter
+
   0.3.0
   - basic lfo support implemented
   - @vib macro implemented
@@ -46,7 +53,7 @@ local t_ui = {
     color = "text_title",
     text = "SONG INFO",
     x = 16,
-    y = 160
+    y = 16
   },
   title_label = {
     color = "text_info",
@@ -56,7 +63,7 @@ local t_ui = {
   },
   title_text = {
     color = "text_default",
-    text = "Untitled",
+    text = "",
     x = 144,
     y = 40
   },
@@ -68,7 +75,7 @@ local t_ui = {
   },
   composer_text = {
     color = "text_default",
-    text = "John Doe",
+    text = "",
     x = 144,
     y = 64
   },
@@ -80,7 +87,7 @@ local t_ui = {
   },
   programmer_text = {
     color = "text_default",
-    text = "John Doe",
+    text = "",
     x = 144,
     y = 88
   },
@@ -92,7 +99,7 @@ local t_ui = {
   },
   copyright_text = {
     color = "text_default",
-    text = "John Doe",
+    text = "",
     x = 144,
     y = 112
   },
