@@ -1,6 +1,7 @@
 #TITLE AmigaBASIC Music Demo, 20. Juli 85
 #COMPOSER Johann Sebastian Bach
 #PROGRAMMER marc2o
+#COPYRIGHT Commodore
 
 @env1 = { 2 32 72 50 }
 @vib1 = { 48 32 }
