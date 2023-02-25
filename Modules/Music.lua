@@ -116,17 +116,20 @@ function music:SAWTOOTH(sample_rate, frequency, vibrato) --> function()
   return function(i)
     i = i % npoints + 1 + LFO(i)
     local step = 4 / npoints
-    return i < npoints - 1 and step * (i - 1) - 1 or -1
+    return i < (npoints - 1) and step * (i - 1) - 1 or -1
   end
 end
 
 function music:NOISE(sample_rate, frequency) --> function()
-  local npoints = sample_rate / frequency
+  local npoints = sample_rate / frequency * 32
+  local buffer = {}
+  for i = 1, math.floor(npoints) do
+    buffer[i] = math.random(-1.0, 1.0)
+  end
 
   return function(i)
-    --i = i % npoints + 1
-    --return i < npoints - 1 and math.random(-1.0, 1.0)
-    return math.random(-1.0, 1.0)
+    i = i % npoints + 1
+    return i < (npoints - 1) and buffer[math.floor(i)] or 0
   end
 end
 
@@ -361,15 +364,15 @@ function music:note(note, accident, value, dot)
   self:set_track_duration(duration, track)
 
   self:send({
-    note = note,
-    accident = accident,
-    duration = duration,
-    octave = self:get_octave(track),
-    volume = self:get_volume(track),
-    dcycle = self.tracks.info[track].dcycle,
-    envelope = self:get_envelope(track),
-    vibrato = self:get_vibrato(track),
-    quantization = self:get_quantization(track),
+    note          = note,
+    accident      = accident,
+    duration      = duration,
+    octave        = self:get_octave(track),
+    volume        = self:get_volume(track),
+    dcycle        = self.tracks.info[track].dcycle,
+    envelope      = self:get_envelope(track),
+    vibrato       = self:get_vibrato(track),
+    quantization  = self:get_quantization(track),
     track = track
   })
 end
@@ -529,8 +532,8 @@ function music:parse_mml(mml) --> bool
           -- # keyword
           local keyword, value = string.match(string.sub(line, i), "#(%a+)%s+(.+)")
           value = value:gsub("(;.+)", "")
-          end_of_line = true
           self:set_info(keyword, value)
+          end_of_line = true
         
         elseif cmd:match("@") then
           -- @ macro
@@ -592,6 +595,9 @@ function music:parse_mml(mml) --> bool
           -- <, >, & octave shifts and tie
           if cmd:match("[<>]") then
             self:shift_octave(cmd == "<" and -1 or 1)
+          
+          elseif cmd:match("&") then
+            -- & tie
           end
 
         elseif cmd:match("[%[%]]") then

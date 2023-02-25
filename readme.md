@@ -10,9 +10,11 @@ The synthesizer capabilities are loosely based on the NES.
 
 Open any an MML file (either `.txt` or `.mml`) per drag-n-drop on the LÖVE app icon or the app window while Music is running.
 
+The app now features some buttons aka a rudimentary graphical user interface. But you can still use the following hotkeys:
+
 Use `[Tab]` to play or pause the music.
 
-Use `[F1]` to export as AIFF and `[F2]` for MIDI (Format 1) export.
+~~Use `[F1]` to export as AIFF and `[F2]` for MIDI (Format 1) export.~~
 
 AIFF and MIDI files are saved at LÖVE’s default location, which is
 
@@ -91,7 +93,7 @@ For the two pulse wave channels `A` and `B` the duty cycle can be set using the 
 
 You can create vibratos using `@vib` macros by defining the LFO frequency (`0 .. n`) and the intensity (`0 .. 127`) of the vibrato.
 
-	@vib0 = { 32 48 }
+	@vib0 = { 32, 48 }
 	
 Call the macro to turn on your vibrato settings for the following notes. Call `@viboff` to turn it off again.
 

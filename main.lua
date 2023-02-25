@@ -9,9 +9,13 @@
 
 ]]
 
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 
 --[[
+  0.5.0
+  - simple gui added
+  - noise synth bug fix
+  
   0.4.0
   - loops implemented
   - bug fixes
@@ -39,16 +43,11 @@ VERSION = "0.4.0"
 require("Modules.NamedColorPalette")
 require("Modules.Music")
 require("Modules.WriteAiff")
+require("Modules.Gui")
 
+font = nil
 local visualizer = ""
-local font = nil
 local t_ui = {
-  keycode_esc = {
-    color = "text_empty",
-    text = "[Esc] Quit  [Tab] Play/Pause  [F1] Export AIFF",
-    x = 16,
-    y = 400 - 40
-  },
   song_title = {
     color = "text_title",
     text = "SONG INFO",
@@ -140,6 +139,32 @@ local t_ui = {
     y = 136
   },
 }
+--[[
+function export_button.action()
+  write_aiff()
+end
+
+]]
+
+function write_aiff()
+  local content = ""
+  local file = aiff:createFile(music.meta.title .. " by " .. music.meta.composer)
+  aiff:writeFile(file, {
+    soundData = music.audio.sound_data,
+    title = music.meta.title,
+    composer = music.meta.composer
+  })
+  aiff:closeFile(file)
+
+  local path = {
+    macOS = "~/Library/Application Support/LOVE/Music/",
+    Windows = "%appdata%\\LOVE\\Music\\",
+    Linux = "~/.local/share/love/"
+  }
+  local os = love.system.getOS()
+  if os == "OS X" then os = "macOS" end
+  success = love.window.showMessageBox("AIFF-Export", "Saved to " .. path[os], "info", true)
+end
 
 ----------------------------------
 -- LÖVE BASE FUNCTIONS
@@ -149,11 +174,14 @@ function love.update(dt)
   if dt < 1/60 then
     love.timer.sleep(1/60 - dt)
   end
-  
+
   NEXT_t = NEXT_t + MIN_dt
 
   ---
 
+  gui.buttons["play_pause"].is_active = music:is_ready()
+  gui.buttons["export"].is_active = music:is_ready()
+  
   if music:is_playing() then
     local value = music:get_current_sample()
     visualizer = visualizer .. string.char(math.floor(math.abs(value * 100)))
@@ -190,6 +218,8 @@ function love.draw()
     love.graphics.print(element.text, element.x, element.y)
   end
 
+  gui:draw_buttons()
+
   ---
 
   local current_time = love.timer.getTime()
@@ -201,6 +231,8 @@ function love.draw()
 end
 
 function love.load()
+  --print("v"..VERSION)
+  
   font = love.graphics.newFont("Assets/FiraCode-Medium.ttf", 16)
   love.graphics.setFont(font)
   -- see Assets/FiraCode-LICENSE.txt for more info
@@ -219,6 +251,33 @@ function love.load()
   colors = NamedColorPalette:new()
   colors:create(require("Assets.colors")) 
 
+  gui:add_button(
+    "quit",
+    "Quit",
+    font:getHeight(),
+    love.graphics.getHeight() - 3 * font:getHeight(),
+    false
+  )
+  gui:add_button_action("quit", function () love.event.quit() end)
+  gui:add_hotkey("quit", "escape")
+
+  gui:add_button(
+    "play_pause",
+    "Play/Pause",
+    gui.buttons["quit"].rect.x + gui.buttons["quit"].rect.w + font:getHeight(),
+    love.graphics.getHeight() - 3 * font:getHeight(),
+    true
+  )
+  gui:add_button_toggle_actions("play_pause", function () music:play() end, function () music:pause() end)
+  gui:add_hotkey("play_pause","tab")
+
+  gui:add_button(
+    "export",
+    "Export AIFF",
+    gui.buttons["play_pause"].rect.x + gui.buttons["play_pause"].rect.w + font:getHeight(),
+    love.graphics.getHeight() - 3 * font:getHeight(),
+    false
+  )
   ---
 
   MIN_dt = 1/60
@@ -264,35 +323,15 @@ function love.filedropped(file)
 end
 
 function love.keypressed(key, scancode, isrepeat)
-  if key == "escape" then
+  if key == gui.buttons["quit"].hotkey then
     love.event.quit()
     
-  elseif key == "tab" then
+  elseif key == gui.buttons["play_pause"].hotkey then
     if music:is_playing() then
       music:pause()
     else
       music:play()
     end
-    
-  elseif key == "f1" and music:is_ready() then
-    -- export AIFF
-    local content = ""
-    local file = aiff:createFile(music.meta.title .. " by " .. music.meta.composer)
-    aiff:writeFile(file, {
-      soundData = music.audio.sound_data,
-      title = music.meta.title,
-      composer = music.meta.composer
-    })
-    aiff:closeFile(file)
-
-    local path = {
-      macOS = "~/Library/Application Support/LOVE/Music/",
-      Windows = "%appdata%\\LOVE\\Music\\",
-      Linux = "~/.local/share/love/"
-    }
-    local os = love.system.getOS()
-    if os == "OS X" then os = "macOS" end
-    success = love.window.showMessageBox("AIFF-Export", "Saved to " .. path[os], "info", true)
     
   elseif key == "return" then
     -- enter
@@ -300,3 +339,4 @@ function love.keypressed(key, scancode, isrepeat)
     -- ...
   end
 end
+
