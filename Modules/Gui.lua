@@ -40,6 +40,30 @@ function gui:draw_buttons()
   end
 end
 
+function gui:execute_action(button)
+  if button.is_toggle then
+    if not button.toggled then 
+      button.toggled = true
+      button.action_on()
+    else
+      button.toggled = false
+      button.action_off()            
+    end
+  else
+    button.action()
+  end
+end
+
+function gui:check_hotkeys(key)
+  for _, button in pairs(self.buttons) do
+    if button.hotkey ~= "" then
+      if button.is_active and button.hotkey == key then
+        self:execute_action(button)
+      end
+    end
+  end
+end
+
 function gui:check_buttons()
   for _, button in pairs(self.buttons) do
     local mx = self.mouse.x
@@ -50,17 +74,7 @@ function gui:check_buttons()
       if self.mouse.button == 1 and not button.clicked then      
         button.clicked = true
       else 
-        if button.is_toggle then
-          if not button.toggled then 
-            button.toggled = true
-            button.action_on()
-          else
-            button.toggled = false
-            button.action_off()            
-          end
-        else
-          button.action()
-        end
+        self:execute_action(button)
       end
     end
   end
@@ -123,5 +137,9 @@ function love.mousereleased(x, y, button, istouch)
     gui.mouse.button = 0
     gui:check_buttons()
   end  
+end
+
+function love.keypressed(key, scancode, isrepeat)
+  gui:check_hotkeys(key)
 end
 

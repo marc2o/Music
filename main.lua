@@ -278,6 +278,8 @@ function love.load()
     love.graphics.getHeight() - 3 * font:getHeight(),
     false
   )
+  gui:add_button_action("export", function () write_aiff() end)
+  
   ---
 
   MIN_dt = 1/60
@@ -319,24 +321,6 @@ function love.filedropped(file)
     end
   else
     local error = love.window.showMessageBox("Error", "Unable to open file", "info", true)
-  end
-end
-
-function love.keypressed(key, scancode, isrepeat)
-  if key == gui.buttons["quit"].hotkey then
-    love.event.quit()
-    
-  elseif key == gui.buttons["play_pause"].hotkey then
-    if music:is_playing() then
-      music:pause()
-    else
-      music:play()
-    end
-    
-  elseif key == "return" then
-    -- enter
-  else
-    -- ...
   end
 end
 

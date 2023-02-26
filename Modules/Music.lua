@@ -121,7 +121,8 @@ function music:SAWTOOTH(sample_rate, frequency, vibrato) --> function()
 end
 
 function music:NOISE(sample_rate, frequency) --> function()
-  local npoints = sample_rate / frequency * 32
+  if frequency == 0 then frequency = 440 end
+  local npoints = sample_rate / frequency * 16
   local buffer = {}
   for i = 1, math.floor(npoints) do
     buffer[i] = math.random(-1.0, 1.0)

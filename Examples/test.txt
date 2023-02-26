@@ -26,7 +26,7 @@ r1
 c c c c c c c c
 c c c c c c c c
 
-E o1 l8 v127
+E o3 l8 v127
 r1 r1
 @env3 v127 c r @env1 v80 c @env3 v127 c
 @env3 v127 c r @env1 v80 c @env3 v127 c
