@@ -251,20 +251,12 @@ function love.load()
   colors = NamedColorPalette:new()
   colors:create(require("Assets.colors")) 
 
-  gui:add_button(
-    "quit",
-    "Quit",
-    font:getHeight(),
-    love.graphics.getHeight() - 3 * font:getHeight(),
-    false
-  )
-  gui:add_button_action("quit", function () love.event.quit() end)
-  gui:add_hotkey("quit", "escape")
-
+  gui:init()
+  
   gui:add_button(
     "play_pause",
     "Play/Pause",
-    gui.buttons["quit"].rect.x + gui.buttons["quit"].rect.w + font:getHeight(),
+    font:getHeight(),
     love.graphics.getHeight() - 3 * font:getHeight(),
     true
   )
@@ -279,7 +271,18 @@ function love.load()
     false
   )
   gui:add_button_action("export", function () write_aiff() end)
-  
+
+  gui:add_button(
+    "quit",
+    "Quit",
+    gui.buttons["export"].rect.x + gui.buttons["export"].rect.w + 2 * font:getHeight(),
+    love.graphics.getHeight() - 3 * font:getHeight(),
+    false
+  )
+  gui:add_button_action("quit", function () love.event.quit() end)
+  gui:add_hotkey("quit", "escape")
+
+
   ---
 
   MIN_dt = 1/60

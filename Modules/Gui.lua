@@ -18,8 +18,19 @@ gui = {
     dy = 0,
     button = 0,
     touch = false,
+  },
+  cursors = {
+    arrow = nil,
+    hand = nil,
+    wait = nil
   }
 }
+
+function gui:init()
+  self.cursors.arrow = love.mouse.getSystemCursor("arrow")
+  self.cursors.hand  = love.mouse.getSystemCursor("hand")
+  self.cursors.wait  = love.mouse.getSystemCursor("wait")
+end
 
 function gui:draw_buttons()
   for _, button in pairs(self.buttons) do
@@ -80,6 +91,18 @@ function gui:check_buttons()
   end
 end
 
+function gui:hover()
+  local mx = self.mouse.x
+  local my = self.mouse.y
+  for _, button in pairs(self.buttons) do
+    if button.is_active and mx > button.rect.x and mx < button.rect.x + button.rect.w and my > button.rect.y and my < button.rect.y + button.rect.h then
+      love.mouse.setCursor(self.cursors.hand)
+    else
+      love.mouse.setCursor(self.cursors.arrow)
+    end
+  end
+end
+
 function gui:add_button_action(id, action)
   self.buttons[id].action = action
 end
@@ -119,6 +142,7 @@ end
 function love.mousemoved(x, y, dx, dy, istouch)
   gui.mouse.x = x
   gui.mouse.y = y
+  gui:hover()
 end
 
 function love.mousepressed(x, y, button, istouch)
