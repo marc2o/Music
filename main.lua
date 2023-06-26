@@ -45,7 +45,8 @@ require("Modules.Music")
 require("Modules.WriteAiff")
 require("Modules.Gui")
 
-font = nil
+Font = nil
+Colors = nil
 local visualizer = ""
 local t_ui = {
   song_title = {
@@ -139,31 +140,31 @@ local t_ui = {
     y = 136
   },
 }
+
 --[[
 function export_button.action()
   write_aiff()
 end
-
 ]]
 
 function write_aiff()
   local content = ""
-  local file = aiff:createFile(music.meta.title .. " by " .. music.meta.composer)
+  local file = aiff:createFile(Music.meta.title .. " by " .. Music.meta.composer)
   aiff:writeFile(file, {
-    soundData = music.audio.sound_data,
-    title = music.meta.title,
-    composer = music.meta.composer
+    soundData = Music.audio.sound_data,
+    title = Music.meta.title,
+    composer = Music.meta.composer
   })
   aiff:closeFile(file)
 
   local path = {
-    macOS = "~/Library/Application Support/LOVE/Music/",
+    macOS   = "~/Library/Application Support/LOVE/Music/",
     Windows = "%appdata%\\LOVE\\Music\\",
-    Linux = "~/.local/share/love/"
+    Linux   = "~/.local/share/love/"
   }
   local os = love.system.getOS()
   if os == "OS X" then os = "macOS" end
-  success = love.window.showMessageBox("AIFF-Export", "Saved to " .. path[os], "info", true)
+  local success = love.window.showMessageBox("AIFF-Export", "Saved to " .. path[os], "info", true)
 end
 
 ----------------------------------
@@ -179,11 +180,11 @@ function love.update(dt)
 
   ---
 
-  gui.buttons["play_pause"].is_active = music:is_ready()
-  gui.buttons["export"].is_active = music:is_ready()
-  
-  if music:is_playing() then
-    local value = music:get_current_sample()
+  Gui.buttons["play_pause"].is_active = Music:is_ready()
+  Gui.buttons["export"].is_active = Music:is_ready()
+
+  if Music:is_playing() then
+    local value = Music:get_current_sample()
     visualizer = visualizer .. string.char(math.floor(math.abs(value * 100)))
     if visualizer:len() > 80 then
       visualizer = visualizer:sub(2, 81)
@@ -192,33 +193,33 @@ function love.update(dt)
 end
 
 function love.draw()
-  love.graphics.clear(colors:get_color("background"))
+  love.graphics.clear(Colors:get_color("background"))
 
   if 1 == 1 then
     for i = visualizer:len() - 1, 0, -1 do
       local height = visualizer:sub(i + 1, i + 1):byte()
       local width = (love.graphics.getWidth() - 32) / visualizer:len()
-      
+
       if height == nil or height == 0 then
         height = 2
       end
-      
+
       if i == 0 then
-        love.graphics.setColor(colors:get_color("cursor"))
+        love.graphics.setColor(Colors:get_color("cursor"))
       else
         love.graphics.setColor(1, 1, 1, 0.1)
       end
-      
+
       love.graphics.rectangle("fill", 16 + i * width, 250 - height, 5, height * 2)
     end
   end
 
   for _, element in pairs(t_ui) do
-    love.graphics.setColor(colors:get_color(element.color))
+    love.graphics.setColor(Colors:get_color(element.color))
     love.graphics.print(element.text, element.x, element.y)
   end
 
-  gui:draw_buttons()
+  Gui:draw_buttons()
 
   ---
 
@@ -232,9 +233,9 @@ end
 
 function love.load()
   --print("v"..VERSION)
-  
-  font = love.graphics.newFont("Assets/FiraCode-Medium.ttf", 16)
-  love.graphics.setFont(font)
+
+  Font = love.graphics.newFont("Assets/FiraCode-Medium.ttf", 16)
+  love.graphics.setFont(Font)
   -- see Assets/FiraCode-LICENSE.txt for more info
   -- https://github.com/tonsky/FiraCode
   love.window.setMode(
@@ -242,45 +243,45 @@ function love.load()
     400,
     {
       fullscreen = false,
-      vsync = 1,
+      vsync = true,
       resizable = false,
       centered = true
     }
   )
   love.window.setTitle("Music v" .. VERSION)
-  colors = NamedColorPalette:new()
-  colors:create(require("Assets.colors")) 
+  Colors = NamedColorPalette:new()
+  Colors:create(require("Assets.colors"))
 
-  gui:init()
-  
-  gui:add_button(
+  Gui:init()
+
+  Gui:add_button(
     "play_pause",
     "Play/Pause",
-    font:getHeight(),
-    love.graphics.getHeight() - 3 * font:getHeight(),
+    Font:getHeight(),
+    love.graphics.getHeight() - 3 * Font:getHeight(),
     true
   )
-  gui:add_button_toggle_actions("play_pause", function () music:play() end, function () music:pause() end)
-  gui:add_hotkey("play_pause","tab")
+  Gui:add_button_toggle_actions("play_pause", function () Music:play() end, function () Music:pause() end)
+  Gui:add_hotkey("play_pause","tab")
 
-  gui:add_button(
+  Gui:add_button(
     "export",
     "Export AIFF",
-    gui.buttons["play_pause"].rect.x + gui.buttons["play_pause"].rect.w + font:getHeight(),
-    love.graphics.getHeight() - 3 * font:getHeight(),
+    Gui.buttons["play_pause"].rect.x + Gui.buttons["play_pause"].rect.w + Font:getHeight(),
+    love.graphics.getHeight() - 3 * Font:getHeight(),
     false
   )
-  gui:add_button_action("export", function () write_aiff() end)
+  Gui:add_button_action("export", function () write_aiff() end)
 
-  gui:add_button(
+  Gui:add_button(
     "quit",
     "Quit",
-    gui.buttons["export"].rect.x + gui.buttons["export"].rect.w + 2 * font:getHeight(),
-    love.graphics.getHeight() - 3 * font:getHeight(),
+    Gui.buttons["export"].rect.x + Gui.buttons["export"].rect.w + 2 * Font:getHeight(),
+    love.graphics.getHeight() - 3 * Font:getHeight(),
     false
   )
-  gui:add_button_action("quit", function () love.event.quit() end)
-  gui:add_hotkey("quit", "escape")
+  Gui:add_button_action("quit", function () love.event.quit() end)
+  Gui:add_hotkey("quit", "escape")
 
 
   ---
@@ -301,19 +302,19 @@ function love.filedropped(file)
     for line in file:lines() do
       if string.len(line) > 0 then table.insert(content, line) end
     end
-    
+
     file:close()
 
-    music:init()
+    Music:init()
 
-    local success = music:parse_mml(content)
+    local success = Music:parse_mml(content)
     if success then
-      t_ui.title_text.text = music.meta.title
-      t_ui.composer_text.text = music.meta.composer
-      t_ui.programmer_text.text = music.meta.programmer
-      t_ui.copyright_text.text = music.meta.copyright
+      t_ui.title_text.text = Music.meta.title
+      t_ui.composer_text.text = Music.meta.composer
+      t_ui.programmer_text.text = Music.meta.programmer
+      t_ui.copyright_text.text = Music.meta.copyright
 
-      local used_voices = music:get_used_voices()
+      local used_voices = Music:get_used_voices()
       for voice, used in pairs(used_voices) do
         if used then
           t_ui["voice_" .. voice .. "_text"].color = "text_value"

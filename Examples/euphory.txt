@@ -1,5 +1,5 @@
 ;---------------------------------------------------------------
-#TITLE			EUPHORY / 町
+#TITLE			EUPHORY
 #COMPOSER		Manabu Saito
 ;---------------------------------------------------------------
 
@@ -31,7 +31,7 @@ C rrccrrccrrccrrc+c+rrddrrddrr<aarraa
 C rra+a+rra+a+rr>ggrrggrreerreef4r4
 C q8a2.&a8.&a32r32a1d2e2f2g2a2.&a8.&a32r32a1d2e2f2g4r4
 
-E o3 @env1 v120
+E o4 @env1 v127
 E l8[rc4c4ccc4c4c4ccc4c4c4ccc4c4cc4rr]2
 E l16
 E crcccrcccrcccrcc crcccrcccrcccrcc

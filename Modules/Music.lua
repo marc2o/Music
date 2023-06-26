@@ -9,7 +9,7 @@
 
 ]]
 
-music = {
+Music = {
   is_ready = false,
   tracks = {
     current_track = "A",
@@ -55,6 +55,9 @@ music = {
       int = 32 / 0x7f * 8 -- intensity 0 .. 127 -> 0.0 .. 8.0
     }
   },
+  wavetables = {
+    noise = {}
+  },
   audio = {
     source = nil,
     sound_data = nil
@@ -62,7 +65,7 @@ music = {
   mml = {}
 }
 
-function music:LFO(frequency, intensity) --> function()
+function Music:LFO(frequency, intensity) --> function()
   local lfo_rate = self.sample_rate / frequency
   local lfo_intensity = intensity or 1.0
   
@@ -73,7 +76,7 @@ end
 
 
 -- pulse wave
-function music:PULSE(sample_rate, frequency, duty_cycle, vibrato) --> function()
+function Music:PULSE(sample_rate, frequency, duty_cycle, vibrato) --> function()
   -- number of points in dataset
   local npoints = sample_rate / frequency
   local duty_cycle = duty_cycle or 0.5
@@ -90,7 +93,7 @@ function music:PULSE(sample_rate, frequency, duty_cycle, vibrato) --> function()
   end
 end
 
-function music:TRIANGLE(sample_rate, frequency, vibrato) --> function()
+function Music:TRIANGLE(sample_rate, frequency, vibrato) --> function()
   local npoints = sample_rate / frequency
 
   local LFO = function(i) return 0 end
@@ -105,7 +108,7 @@ function music:TRIANGLE(sample_rate, frequency, vibrato) --> function()
   end
 end
 
-function music:SAWTOOTH(sample_rate, frequency, vibrato) --> function()
+function Music:SAWTOOTH(sample_rate, frequency, vibrato) --> function()
   local npoints = sample_rate / frequency
 
   local LFO = function(i) return 0 end
@@ -120,21 +123,22 @@ function music:SAWTOOTH(sample_rate, frequency, vibrato) --> function()
   end
 end
 
-function music:NOISE(sample_rate, frequency) --> function()
-  if frequency == 0 then frequency = 440 end
-  local npoints = sample_rate / frequency * 16
-  local buffer = {}
-  for i = 1, math.floor(npoints) do
-    buffer[i] = math.random(-1.0, 1.0)
-  end
+function Music:NOISE(sample_rate, frequency) --> function()
+  local npoints = sample_rate / frequency
 
   return function(i)
     i = i % npoints + 1
-    return i < (npoints - 1) and buffer[math.floor(i)] or 0
+    local n = 0
+    if npoints >= #self.wavetables.noise then
+      n = math.floor((#self.wavetables.noise / npoints) * i)
+    else
+      n = math.floor((npoints / #self.wavetables.noise) * i)
+    end
+    return i < (npoints - 1) and self.wavetables.noise[n] or 0
   end
 end
 
-function music:init()
+function Music:init()
   if self.audio.source then self:stop() end
   self.audio = { source = nil, sound_data = nil }
   self.meta.title = ""
@@ -151,42 +155,47 @@ function music:init()
   self.tracks.info.D = {}
   self.tracks.data.E = {}
   self.tracks.info.E = {}
+
+  for i = 1, 64 do
+    self.wavetables.noise[i] = math.random(-1.0, 1.0)
+  end
+
 end
-function music:is_ready() --> bool
+function Music:is_ready() --> bool
   if self.audio.source then
     return true
   else
     return false
   end
 end
-function music:play()
+function Music:play()
   if self:is_ready() then
     love.audio.play(self.audio.source)
     self.audio.source:setLooping(true)
   end
 end
-function music:stop()
+function Music:stop()
   love.audio.stop()
 end
-function music:is_playing() --> bool
+function Music:is_playing() --> bool
   if self:is_ready() then
     return self.audio.source:isPlaying()
   else
     return false
   end
 end
-function music:pause()
+function Music:pause()
   if self:is_ready() and self:is_playing() then
     love.audio.pause(self.audio.source)
   end
 end
-function music:get_current_sample() --> value
+function Music:get_current_sample() --> value
   local position = self.audio.source:tell("seconds")
   position = math.floor(position * self:get_sample_rate())
   return self.audio.sound_data:getSample(position)
 end
 
-function music:set_info(keyword, value)
+function Music:set_info(keyword, value)
   if string.lower(keyword) == "title" then
     self.meta.title = value
   elseif string.lower(keyword) == "composer" then
@@ -203,7 +212,7 @@ function music:set_info(keyword, value)
   end
 end
 
-function music:get_used_voices()
+function Music:get_used_voices()
   return {
     A = next(self.tracks.data.A) and true or false,
     B = next(self.tracks.data.B) and true or false,
@@ -213,31 +222,31 @@ function music:get_used_voices()
   }
 end
 
-function music:get_title() --> string
+function Music:get_title() --> string
   return self.meta.title
 end
 
-function music:get_composer() --> string
+function Music:get_composer() --> string
   return self.meta.composer
 end
 
-function music:get_programmer() --> string
+function Music:get_programmer() --> string
   return self.meta.programmer
 end
 
-function music:get_copyright() --> string
+function Music:get_copyright() --> string
   return self.meta.copyright
 end
 
-function music:get_timebase() --> number
+function Music:get_timebase() --> number
   return self.timebase
 end
 
-function music:get_sample_rate() --> number
+function Music:get_sample_rate() --> number
   return self.sample_rate
 end
 
-function music:define_envelope(name, attack, decay, sustain, release)
+function Music:define_envelope(name, attack, decay, sustain, release)
   self.envelopes[name] = {
     a = attack / 60 * self.sample_rate,
     d = decay / 60 * self.sample_rate,
@@ -245,50 +254,50 @@ function music:define_envelope(name, attack, decay, sustain, release)
     r = release / 60 * self.sample_rate
   }
 end
-function music:set_envelope(name)
+function Music:set_envelope(name)
   local track = track or self:get_track()
   self.tracks.info[track].envelope = name
 end
-function music:get_envelope(track) --> string
+function Music:get_envelope(track) --> string
   local envelope = self.tracks.info[track].envelope or "default"
   return envelope
 end
 
-function music:define_vibrato(name, frequency, intensity)
+function Music:define_vibrato(name, frequency, intensity)
   self.vibratos[name] = {
     frq = frequency,
     int = intensity / 0x7f * 8,
   }
 end
-function music:set_vibrato(name)
+function Music:set_vibrato(name)
   local track = track or self:get_track()
   self.tracks.info[track].vibrato = name
 end
-function music:get_vibrato(track) --> string
+function Music:get_vibrato(track) --> string
   local vibrato = self.tracks.info[track].vibrato or "none"
   return vibrato
 end
-function music:vibrato_off(track)
+function Music:vibrato_off(track)
   local track = track or self:get_track()
   self.tracks.info[track].vibrato = "none"
 end
 
 
-function music:set_track(letter)
+function Music:set_track(letter)
   self.tracks.current_track = letter
 end
-function music:get_track() --> string
+function Music:get_track() --> string
   return self.tracks.current_track
 end
 
-function music:set_tempo(bpm)
+function Music:set_tempo(bpm)
   self.tempo = bpm
 end
-function music:get_tempo() --> number
+function Music:get_tempo() --> number
   return self.tempo
 end
 
-function music:set_volume(volume, track)
+function Music:set_volume(volume, track)
   local track = track or self:get_track()
   if track == "C" then
     volume = tostring(volume / volume) == tostring(0/0) and 0 or 0.9
@@ -297,7 +306,7 @@ function music:set_volume(volume, track)
   end
   self.tracks.info[track].volume = volume
 end
-function music:get_volume(track) --> number 0..127
+function Music:get_volume(track) --> number 0..127
   local volume = self.tracks.info[track].volume or 80 / 0x7F
   if track == "C" then
     volume = tostring(volume / volume) == tostring(0/0) and 0 or 0.9
@@ -305,52 +314,52 @@ function music:get_volume(track) --> number 0..127
   return volume
 end
 
-function music:shift_octave(shift, track)
+function Music:shift_octave(shift, track)
   local track = track or self:get_track()
   local octave = self:get_octave(track)
   octave = octave + shift
   self:set_octave(octave)
 end
-function music:set_octave(octave, track)
+function Music:set_octave(octave, track)
   local track = track or self:get_track()
   self.tracks.info[track].octave = octave
 end
-function music:get_octave(track) --> number
+function Music:get_octave(track) --> number
   local octave = self.tracks.info[track].octave or 4
   return octave
 end
 
-function music:set_length(length, track)
+function Music:set_length(length, track)
   local track = track or self:get_track()
   self.tracks.info[track].length = length
 end
-function music:get_length(track) --> number
+function Music:get_length(track) --> number
   local length = self.tracks.info[track].length or 4
   return length
 end
 
-function music:set_quantization(q, track)
+function Music:set_quantization(q, track)
   local track = track or self:get_track()
   self.tracks.info[track].quantization = q
 end
-function music:get_quantization(track) --> number
+function Music:get_quantization(track) --> number
   local q = self.tracks.info[track].quantization or 8
   return q
 end
 
-function music:get_track_duration(track)
+function Music:get_track_duration(track)
   local track = track or self:get_track()
   local track_duration = self.tracks.info[track].track_duration or 0
   return track_duration
 end
-function music:set_track_duration(duration, track)
+function Music:set_track_duration(duration, track)
   local track = track or self:get_track()
   local track_duration = self:get_track_duration(track)
   track_duration = track_duration + duration
   self.tracks.info[track].track_duration = track_duration
 end
 
-function music:note(note, accident, value, dot)
+function Music:note(note, accident, value, dot)
   local track = self:get_track()
   local duration = 0
 
@@ -377,20 +386,20 @@ function music:note(note, accident, value, dot)
     track = track
   })
 end
-function music:send(message)
+function Music:send(message)
   table.insert(self.tracks.data[message.track], message)
 end
 
 
 -- AUDIO RENDERER
 
-function music:render_audio()
+function Music:render_audio()
   local song_duration = 0
   local song_voices = 0
   local song_sample_count = 0
   local previous_sound = {}
   local sample = 0
-  
+
   for track, _ in pairs(self.tracks.info) do
     if song_duration < self:get_track_duration(track) then
       song_duration = self:get_track_duration(track)
@@ -405,18 +414,17 @@ function music:render_audio()
   self.audio.sound_data = love.sound.newSoundData(song_samples, self:get_sample_rate(), 8, 1)
 
   local notes = { c = -9, d = -7, e = -5, f = -4, g = -2, a = 0, b = 2, h = 2 }
-  
+
   for key, track in pairs(self.tracks.data) do
     song_sample_count = 0
     previous_sound = {}
 
     for _, message in ipairs(track) do
-        
+
       local waveform = nil
       local frequency = 0
       local envelope = 0
       local samples = 0
-     
 
       if message.duration > 0 then
         samples = message.duration * self.sample_rate
@@ -508,7 +516,7 @@ end
 
 -- THE PARSER
 
-function music:parse_mml(mml) --> bool
+function Music:parse_mml(mml) --> bool
   local success = true
   math.randomseed(os.time())
 
