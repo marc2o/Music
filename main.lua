@@ -9,9 +9,12 @@
 
 ]]
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 
 --[[
+  0.6.0
+  - basic error handling when dropping malformed mml files
+
   0.5.0
   - simple gui added
   - noise synth bug fix
@@ -294,6 +297,20 @@ function love.quit()
 end
 
 function love.filedropped(file)
+  Music:pause()
+  Gui.buttons["play_pause"].is_active = false
+  Gui.buttons["play_pause"].toggled = false
+  Gui.buttons["export"].is_active = false
+  t_ui.title_text.text = ""
+  t_ui.composer_text.text = ""
+  t_ui.programmer_text.text = ""
+  t_ui.copyright_text.text = ""
+  t_ui["voice_A_text"].color = "text_empty"
+  t_ui["voice_B_text"].color = "text_empty"
+  t_ui["voice_C_text"].color = "text_empty"
+  t_ui["voice_D_text"].color = "text_empty"
+  t_ui["voice_E_text"].color = "text_empty"
+
   if file then
     file:open("r")
     --file_content = file:read()
@@ -307,8 +324,15 @@ function love.filedropped(file)
 
     Music:init()
 
-    local success = Music:parse_mml(content)
+    local success = false
+    if pcall(function () Music:parse_mml(content) end) then
+      success = true
+    else
+      -- error
+      local error = love.window.showMessageBox("Error", "Malformed mml", "info", true)
+    end
     if success then
+      Music:render_audio()
       t_ui.title_text.text = Music.meta.title
       t_ui.composer_text.text = Music.meta.composer
       t_ui.programmer_text.text = Music.meta.programmer

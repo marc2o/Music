@@ -55,9 +55,6 @@ Music = {
       int = 32 / 0x7f * 8 -- intensity 0 .. 127 -> 0.0 .. 8.0
     }
   },
-  wavetables = {
-    noise = {}
-  },
   audio = {
     source = nil,
     sound_data = nil
@@ -128,13 +125,9 @@ function Music:NOISE(sample_rate, frequency) --> function()
 
   return function(i)
     i = i % npoints + 1
-    local n = 0
-    if npoints >= #self.wavetables.noise then
-      n = math.floor((#self.wavetables.noise / npoints) * i)
-    else
-      n = math.floor((npoints / #self.wavetables.noise) * i)
-    end
-    return i < (npoints - 1) and self.wavetables.noise[n] or 0
+    --local  n = math.floor((#self.wavetables.noise / npoints) * i)
+    --return i < (npoints - 1) and self.wavetables.noise[n] or 0
+    return i < (npoints - 1) and math.random(-2.0, 2.0) or 0
   end
 end
 
@@ -156,10 +149,7 @@ function Music:init()
   self.tracks.data.E = {}
   self.tracks.info.E = {}
 
-  for i = 1, 64 do
-    self.wavetables.noise[i] = math.random(-1.0, 1.0)
-  end
-
+  math.randomseed(os.time())
 end
 function Music:is_ready() --> bool
   if self.audio.source then
@@ -516,8 +506,7 @@ end
 
 -- THE PARSER
 
-function Music:parse_mml(mml) --> bool
-  local success = true
+function Music:parse_mml(mml)
   math.randomseed(os.time())
 
   self.mml = mml
@@ -674,8 +663,4 @@ function Music:parse_mml(mml) --> bool
     until end_of_line
 
   end
-
-  self:render_audio()
-
-  return success
 end
